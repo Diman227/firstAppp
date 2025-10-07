@@ -1,0 +1,39 @@
+<h1 mat-dialog-title>Edit user</h1>
+<div mat-dialog-content style="display: inline; padding: 0px; margin: auto;">
+
+  <mat-form-field class="full-width-input">
+
+    <input matInput type="text" value="data.name" placeholder="Name of student"
+    [(ngModel)]="editingUser.name" required>
+
+  </mat-form-field>
+
+  <mat-form-field class="full-width-input">
+
+    <input matInput type="text" value="data.username" placeholder="Username"
+    [(ngModel)]="editingUser.username" required>
+
+  </mat-form-field>
+
+  <mat-form-field class="full-width-input">
+
+    <input matInput type="text" value="data.email" placeholder="User's email"
+    [(ngModel)]="editingUser.email" required>
+
+  </mat-form-field>
+
+  <mat-form-field class="full-width-input">
+
+    <input matInput type="text" value="data.address.city" placeholder="User's city"
+    [(ngModel)]="editingUser.address.city" required>
+
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button (click)="onNoClick()">Cancel</button>
+  <button class="right-align" mat-raised-button color="primary"
+    [mat-dialog-close]="editingUser">Add</button>
+</div>
+
+
+

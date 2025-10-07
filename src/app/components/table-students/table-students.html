@@ -1,0 +1,25 @@
+<div class = 'header'>
+<h1>Table-students!</h1>
+<h2>Таблица студентов</h2>
+<table>
+  <tbody>
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Surname</th>
+  </tr>
+    @for(student of students; track student.id){
+      <tr>
+        <td>{{ student.id }}</td>
+        <td>{{ student.name }}</td>
+        <td>{{ student.surname }}</td>
+        <td>
+          <button (click)="deleteStudent(student)">Delete</button>
+          <button (click)="editStudent(student)">Edit</button>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+<button (click)="addNewStudent()" id="addBtn">Add new student</button>
+</div>

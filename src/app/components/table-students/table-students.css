@@ -1,0 +1,28 @@
+table, td, th {
+  border: 1px solid black;
+  border-collapse: collapse;
+  margin: auto;
+  padding: 5px;
+  color: rgb(9, 4, 33);
+  text-align: center;
+}
+
+td {
+  font-size: 24px;
+}
+
+button {
+  margin: 5px;
+  font-size: 20px;
+  padding: 6px;
+  font-style: italic;
+}
+
+.header {
+  text-align: center;
+  font-size: 24px;
+}
+
+#addBtn {
+  margin-top: 25px;
+}
