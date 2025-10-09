@@ -1,4 +1,6 @@
-
+<header>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel=”stylesheet”>
+</header>
 <div class="comp">
 <h2 class="header">Таблица пользователей</h2>
 
@@ -27,6 +29,9 @@
     <th mat-header-cell *matHeaderCellDef>Actions</th>
     <td mat-cell *matCellDef="let student">
       <button (click)="deleteStudent(student)">Delete</button>
+      <!-- <button matFab aria-label="Example icon button with a delete icon">
+        <mat-icon>delete</mat-icon>
+      </button> -->
 
       <button (click)="editStudent(student)">Edit</button>
     </td>
@@ -36,10 +41,12 @@
    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
 <br>
-<div class="header">
-  <button (click)="addNewStudent()" id="addBtn">Add new student</button>
-</div>
+    <button (click)="addNewStudent()">Add new Student</button>
+<ng-container>
   <mat-paginator [pageSizeOptions]="[5, 10, 20, 50]"
-                 showFirstLastButtons>
+                 showFirstLastButtons
+                 length = {{students.length}}
+                 pageSize="10">
   </mat-paginator>
+</ng-container>
 </div>

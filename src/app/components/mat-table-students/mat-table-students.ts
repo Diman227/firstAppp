@@ -11,6 +11,8 @@ import {ViewChild, inject} from '@angular/core';
 import {MatSort, Sort, MatSortModule} from '@angular/material/sort';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import { MatInputModule } from "@angular/material/input";
+import { MatButtonModule } from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
 
 @Component({
   selector: 'app-mat-table-students',
@@ -20,7 +22,10 @@ import { MatInputModule } from "@angular/material/input";
     CommonModule,
     MatSortModule,
     MatPaginatorModule,
-    MatInputModule
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+
 ],
   templateUrl: './mat-table-students.html',
   styleUrl: './mat-table-students.css'
@@ -33,7 +38,8 @@ export class MatTableStudents {
 
   constructor(private mokkyServer: MokkyServer, public dialog: MatDialog) {
     this.students = [];
-    this.dataSource = new MatTableDataSource(this.refreshTable());
+    this.dataSource = new MatTableDataSource();
+    this.refreshTable();
   }
 
   @ViewChild(MatSort) sort: MatSort | undefined;
@@ -67,9 +73,9 @@ export class MatTableStudents {
 
   refreshTable() {
     this.mokkyServer.getAllStudents().subscribe(data => {
+      this.students = data;
       this.dataSource = new MatTableDataSource(data);
     })
-    return this.students;
   }
 
   addNewStudent(): void {
@@ -88,6 +94,7 @@ export class MatTableStudents {
               this.refreshTable());
           }
         });
+        console.log(this.students.length)
   }
 
   editStudent(student: Student): void {
