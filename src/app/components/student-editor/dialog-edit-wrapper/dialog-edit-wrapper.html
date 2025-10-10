@@ -6,28 +6,28 @@
 
   <mat-form-field class="full-width-input">
 
-    @if (this.data.id == null) {
-      <input matInput type="text" placeholder="Name of student"
-      [(ngModel)]="data.name" required>
-    }
+    <input matInput placeholder="Name of student"
+    [formControl]="nameInputControl">
 
-    @else {
-      <input matInput type="text" value="data.name" placeholder="Name of student"
-      [(ngModel)]="data.name" required>
+    @if(nameInputControl.hasError('required')){
+      <mat-error>Имя обязательно</mat-error>
+    }
+    @if(nameInputControl.hasError('pattern')) {
+      <mat-error>Только буквы разрешены</mat-error>
     }
 
   </mat-form-field>
 
   <mat-form-field class="full-width-input">
 
-    @if(this.data.id == null){
-      <input matInput type="text" placeholder="Surname of student"
-      [(ngModel)]="data.surname" required>
-    }
+    <input matInput type="text" placeholder="Surname of student"
+    [formControl]="surnameInputControl" required>
 
-    @else {
-      <input matInput type="text" value="data.surname" placeholder="Surname of student"
-      [(ngModel)]="data.surname" required>
+    @if(surnameInputControl.hasError('required')){
+      <mat-error>Фамилия обязательно</mat-error>
+    }
+    @if(surnameInputControl.hasError('pattern')) {
+      <mat-error>Только буквы разрешены</mat-error>
     }
 
   </mat-form-field>
@@ -37,6 +37,6 @@
 
 
   <button class="right-align" mat-raised-button color="primary"
-    [mat-dialog-close]="data">{{ dialogBtnName }}</button>
+    [mat-dialog-close]="data" [disabled]="!isFormValid()" (click)="onSaveOrAddClick()">{{ dialogBtnName }}</button>
 </div>
 
