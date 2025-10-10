@@ -6,9 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Student } from '../../models/student';
 import { DialogEditWrapper } from '../student-editor/dialog-edit-wrapper/dialog-edit-wrapper';
-import {LiveAnnouncer} from '@angular/cdk/a11y';
-import {ViewChild, inject} from '@angular/core';
-import {MatSort, Sort, MatSortModule} from '@angular/material/sort';
+import {ViewChild} from '@angular/core';
+import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from '@angular/material/button';
@@ -31,14 +30,11 @@ import {MatIconModule} from '@angular/material/icon';
   styleUrl: './mat-table-students.css'
 })
 export class MatTableStudents {
-  private _liveAnnouncer = inject(LiveAnnouncer); // у макса этого нет
-  students: Student[];
   displayedColumns: string[] = ['id', 'name', 'surname', 'actions'];
   dataSource: MatTableDataSource<Student>;
 
   constructor(private mokkyServer: MokkyServer, public dialog: MatDialog) {
-    this.students = [];
-    this.dataSource = new MatTableDataSource();
+    this.dataSource = new MatTableDataSource<Student>;
     this.refreshTable();
   }
 
@@ -48,14 +44,6 @@ export class MatTableStudents {
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
-  }
-
-  announceSortChange(sortState: Sort) {
-    if (sortState.direction) {
-      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
-    } else {
-      this._liveAnnouncer.announce('Sorting cleared');
-    }
   }
 
   applyFilter(event: Event) {
@@ -73,8 +61,7 @@ export class MatTableStudents {
 
   refreshTable() {
     this.mokkyServer.getAllStudents().subscribe(data => {
-      this.students = data;
-      this.dataSource = new MatTableDataSource(data);
+      this.dataSource.data = data;
     })
   }
 
@@ -94,13 +81,17 @@ export class MatTableStudents {
               this.refreshTable());
           }
         });
-        console.log(this.students.length)
   }
 
   editStudent(student: Student): void {
+    let tempStudent = {
+      id: student.id,
+      name: student.name,
+      surname: student.surname,
+    }
     const dialogEditingStudent = this.dialog.open(DialogEditWrapper, {
       width: '400px',
-      data: student,
+      data: tempStudent,
     });
     dialogEditingStudent.afterClosed().subscribe((result: Student) => {
       if(result != null) {

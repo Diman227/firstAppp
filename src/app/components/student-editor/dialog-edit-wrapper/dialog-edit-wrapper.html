@@ -1,3 +1,6 @@
+<header>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel=”stylesheet”>
+</header>
 <h1 mat-dialog-title>{{ dialogName }}</h1>
 <div mat-dialog-content style="display: inline; padding: 0px; margin: auto;">
 
@@ -5,12 +8,12 @@
 
     @if (this.data.id == null) {
       <input matInput type="text" placeholder="Name of student"
-      [(ngModel)]="editingStudent.name" required>
+      [(ngModel)]="data.name" required>
     }
 
     @else {
       <input matInput type="text" value="data.name" placeholder="Name of student"
-      [(ngModel)]="editingStudent.name" required>
+      [(ngModel)]="data.name" required>
     }
 
   </mat-form-field>
@@ -19,19 +22,21 @@
 
     @if(this.data.id == null){
       <input matInput type="text" placeholder="Surname of student"
-      [(ngModel)]="editingStudent.surname" required>
+      [(ngModel)]="data.surname" required>
     }
 
     @else {
       <input matInput type="text" value="data.surname" placeholder="Surname of student"
-      [(ngModel)]="editingStudent.surname" required>
+      [(ngModel)]="data.surname" required>
     }
 
   </mat-form-field>
 </div>
 <div mat-dialog-actions>
   <button mat-raised-button (click)="onNoClick()">Cancel</button>
+
+
   <button class="right-align" mat-raised-button color="primary"
-    [mat-dialog-close]="editingStudent">{{ dialogBtnName }}</button>
+    [mat-dialog-close]="data">{{ dialogBtnName }}</button>
 </div>
 

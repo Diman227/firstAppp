@@ -1,12 +1,3 @@
-table, td, th {
-  /* border: 1px solid black; */
-  border-collapse: collapse;
-  margin: auto;
-  padding: 5px;
-  color: rgb(9, 4, 33);
-  /* text-align: center; */
-}
-
 th {
   font-weight: bold;
   font-size: 20px;
@@ -18,16 +9,6 @@ td {
 
 td, th {
   width: 25%;
-}
-
-.tableStyle {
-  width: 60%;
-  padding: 50px;
-  font-size: 20px;
-}
-
-body {
-  text-align: center;
 }
 
 button {
@@ -42,10 +23,6 @@ button {
   font-size: 24px;
 }
 
-#addBtn {
-  margin-top: 25px;
-}
-
 .comp {
   text-align: center;
 }
@@ -55,9 +32,3 @@ button {
   width: 100%;
 }
 
-mat-paginator {
-  font-weight: 400pt;
-  text-align: center;
-  opacity: 1;
-  background-color: rgba(255, 255, 255, 1);
-}

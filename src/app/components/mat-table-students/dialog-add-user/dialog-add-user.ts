@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { User } from '../../../models/user';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-dialog-add-user',
@@ -12,6 +13,7 @@ import { User } from '../../../models/user';
     FormsModule,
     MatDialogModule,
     MatInputModule,
+    MatButtonModule,
   ],
   templateUrl: './dialog-add-user.html',
   styleUrl: './dialog-add-user.css'
