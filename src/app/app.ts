@@ -1,5 +1,4 @@
 import { Component, signal, Input } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { StudentEditor } from './components/student-editor/student-editor';
 import { TableStudents } from './components/table-students/table-students';
@@ -9,11 +8,15 @@ import { MatInputModule } from '@angular/material/input';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatButtonModule} from '@angular/material/button';
 import { MatTableStudents } from "./components/mat-table-students/mat-table-students";
+import { CommonModule } from '@angular/common';
+
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-root',
   imports: [
-    // RouterOutlet,
+    CommonModule,
     FormsModule,
     StudentEditor,
     TableStudents,
@@ -22,7 +25,7 @@ import { MatTableStudents } from "./components/mat-table-students/mat-table-stud
     MatInputModule,
     MatCheckboxModule,
     MatButtonModule,
-    MatTableStudents
+    MatTableStudents,
 ],
   providers: [
   ],
