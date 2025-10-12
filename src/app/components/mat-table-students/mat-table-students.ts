@@ -8,7 +8,7 @@ import { Student } from '../../models/student';
 import { DialogEditWrapper } from '../student-editor/dialog-edit-wrapper/dialog-edit-wrapper';
 import {ViewChild} from '@angular/core';
 import {MatSort, MatSortModule} from '@angular/material/sort';
-import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
+import {MatPaginator, MatPaginatorModule, PageEvent} from '@angular/material/paginator';
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
@@ -32,10 +32,19 @@ import {MatIconModule} from '@angular/material/icon';
 export class MatTableStudents {
   displayedColumns: string[] = ['id', 'name', 'surname', 'actions'];
   dataSource: MatTableDataSource<Student>;
+  dataLength: number;
+  currentPageIndex: number;
+  totalPages: number;
+  currentPageSize: number;
 
   constructor(private mokkyServer: MokkyServer, public dialog: MatDialog) {
     this.dataSource = new MatTableDataSource<Student>;
-    this.refreshTable();
+    this.dataLength = 0;
+    this.currentPageIndex = 1;
+    this.totalPages = 0;
+    this.currentPageSize = 5;
+
+    this.getStudentsForPage(this.currentPageIndex, this.currentPageSize);
   }
 
   @ViewChild(MatSort) sort: MatSort | undefined;
@@ -56,7 +65,7 @@ export class MatTableStudents {
   }
 
   ngOnInit(): void {
-    this.refreshTable();
+    // this.getStudentsForPage(1, 5);
   }
 
   refreshTable() {
@@ -105,6 +114,32 @@ export class MatTableStudents {
   deleteStudent(student: Student): void {
     console.log('deleting student!');
     this.mokkyServer.deleteStudent(student).subscribe(() => this.refreshTable());
+  }
+
+  getStudentsForPage(pageNumber: number, limitOfStudentsForPage: number) {
+    // if(this.currentPageIndex == pageNumber) return;
+    this.currentPageIndex = pageNumber;
+    this.mokkyServer.getStudentsForPagination(this.currentPageIndex, limitOfStudentsForPage).subscribe( data => {
+
+      this.dataLength = data.meta.total_items;
+      this.dataSource.data = data.items;
+      console.log('');
+    }
+    )
+  }
+
+  handlePaginatorEvent(event?:PageEvent) {
+    if(event){
+      console.log(event.pageIndex);
+      this.currentPageIndex = ++event.pageIndex; // инкремент тк пагинатор стартует с индекса 0, а для запросов на сервер при page=0/1 одинаковые ответы
+      this.currentPageSize = event.pageSize;
+      this.dataLength = event.length;
+      this.getStudentsForPage(this.currentPageIndex, this.currentPageSize);
+      console.log(this.dataSource);
+    }
+    else {
+      console.log("error in handling paginator's event!!!");
+    }
   }
 
 }

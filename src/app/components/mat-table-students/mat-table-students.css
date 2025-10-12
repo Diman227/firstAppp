@@ -32,3 +32,8 @@ button {
   width: 100%;
 }
 
+button {
+  margin-right: 5px;
+  background-color: darkgrey;
+}
+

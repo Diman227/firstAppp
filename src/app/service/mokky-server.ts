@@ -28,4 +28,11 @@ export class MokkyServer {
     const deleteUrl = `${this.mokkyUrl}/${student.id}`;
     return this.http.patch<Student>(deleteUrl, student);
   }
+
+  getStudentsForPagination(pageNumber: number, limitOfStudentsForPage: number | undefined): Observable<any> {
+    let paginationUrl;
+
+    paginationUrl = `${this.mokkyUrl}?page=${pageNumber}&limit=${limitOfStudentsForPage}`;
+    return this.http.get<any>(paginationUrl);
+  }
 }
