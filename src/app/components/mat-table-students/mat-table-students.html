@@ -9,7 +9,7 @@
   <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Фамилия" #input>
 </mat-form-field>
 
-<table mat-table [dataSource]="dataSource" matSort>
+<table mat-table [dataSource]="dataSource" matSort (matSortChange)="handleSortEvent($event)">
   <ng-container matColumnDef="id">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
     <td mat-cell *matCellDef="let student">{{student.id}}</td>
@@ -43,17 +43,13 @@
 </table>
 <br>
     <button matButton="outlined" (click)="addNewStudent()">Add new Student</button>
-    <!-- <button matButton="outlined" (click)="getStudentsForPage(1, 5)">Get</button> -->
     <br>
 <ng-container>
   <mat-paginator [pageSizeOptions]="[5, 10, 20, 50]"
-                 showFirstLastButtons
-                 length = {{dataLength}}
                  (page)="handlePaginatorEvent($event)"
-                 pageSize="currentPageSize"
-                 pageIndex="0"
-                 aria-label="Select page of users">
-  <button matButton="outlined">next</button>
+                 [pageSize] = "currentPageSize"
+                 [length] = "dataLength"
+                 showFirstLastButtons>
   </mat-paginator>
 </ng-container>
 </div>

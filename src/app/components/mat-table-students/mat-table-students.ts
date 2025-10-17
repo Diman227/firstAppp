@@ -7,11 +7,12 @@ import { CommonModule } from '@angular/common';
 import { Student } from '../../models/student';
 import { DialogEditWrapper } from '../student-editor/dialog-edit-wrapper/dialog-edit-wrapper';
 import {ViewChild} from '@angular/core';
-import {MatSort, MatSortModule} from '@angular/material/sort';
+import {MatSort, MatSortModule, Sort} from '@angular/material/sort';
 import {MatPaginator, MatPaginatorModule, PageEvent} from '@angular/material/paginator';
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-mat-table-students',
@@ -33,18 +34,17 @@ export class MatTableStudents {
   displayedColumns: string[] = ['id', 'name', 'surname', 'actions'];
   dataSource: MatTableDataSource<Student>;
   dataLength: number;
+  countOfPages: number;
   currentPageIndex: number;
-  totalPages: number;
   currentPageSize: number;
 
   constructor(private mokkyServer: MokkyServer, public dialog: MatDialog) {
     this.dataSource = new MatTableDataSource<Student>;
     this.dataLength = 0;
     this.currentPageIndex = 1;
-    this.totalPages = 0;
     this.currentPageSize = 5;
+    this.countOfPages = 0;
 
-    this.getStudentsForPage(this.currentPageIndex, this.currentPageSize);
   }
 
   @ViewChild(MatSort) sort: MatSort | undefined;
@@ -53,6 +53,7 @@ export class MatTableStudents {
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
+    setTimeout(() => this.paginator!.length = this.dataLength);
   }
 
   applyFilter(event: Event) {
@@ -65,13 +66,12 @@ export class MatTableStudents {
   }
 
   ngOnInit(): void {
-    // this.getStudentsForPage(1, 5);
+    this.refreshTable();
+    // this.dataSource.paginator = this.paginator;
   }
 
   refreshTable() {
-    this.mokkyServer.getAllStudents().subscribe(data => {
-      this.dataSource.data = data;
-    })
+    this.getStudentsForPage(this.currentPageIndex, this.currentPageSize);
   }
 
   addNewStudent(): void {
@@ -86,8 +86,12 @@ export class MatTableStudents {
         dialogAddingNewStudent.afterClosed().subscribe((result: Student) => {
           if(result != null) {
             console.log("adding new student: " + result.name);
-            this.mokkyServer.addNewStudent(result).subscribe(k=>
-              this.refreshTable());
+            this.mokkyServer.addNewStudent(result).subscribe(() => {
+              // this.currentPageIndex = this.countOfPages; багается пагинатор
+
+              this.refreshTable();
+            }
+            );
           }
         });
   }
@@ -113,32 +117,158 @@ export class MatTableStudents {
 
   deleteStudent(student: Student): void {
     console.log('deleting student!');
-    this.mokkyServer.deleteStudent(student).subscribe(() => this.refreshTable());
+    this.mokkyServer.deleteStudent(student).subscribe(() => {
+      if (this.dataLength % 5 == 1) --this.currentPageIndex; // багается пагинатор
+      this.refreshTable();
+    }
+    );
   }
 
   getStudentsForPage(pageNumber: number, limitOfStudentsForPage: number) {
-    // if(this.currentPageIndex == pageNumber) return;
     this.currentPageIndex = pageNumber;
+
+    if(this.dataSource.paginator){
+        this.dataSource.paginator.length = this.dataLength;
+        this.dataSource.paginator.pageIndex = this.currentPageIndex - 1;
+        this.dataSource.paginator.pageSize = this.currentPageSize;
+    }
+
     this.mokkyServer.getStudentsForPagination(this.currentPageIndex, limitOfStudentsForPage).subscribe( data => {
 
+      console.log(data.meta.per_page + " per-page");
       this.dataLength = data.meta.total_items;
       this.dataSource.data = data.items;
+      this.countOfPages = data.meta.total_pages;
       console.log('');
+
     }
     )
   }
 
   handlePaginatorEvent(event?:PageEvent) {
     if(event){
-      console.log(event.pageIndex);
-      this.currentPageIndex = ++event.pageIndex; // инкремент тк пагинатор стартует с индекса 0, а для запросов на сервер при page=0/1 одинаковые ответы
+
+      // if (this.currentPageSize !== event.pageSize) this.currentPageIndex = 0;
+      // else
+      this.currentPageIndex = event.pageIndex;
+
       this.currentPageSize = event.pageSize;
-      this.dataLength = event.length;
-      this.getStudentsForPage(this.currentPageIndex, this.currentPageSize);
-      console.log(this.dataSource);
+
+      this.getStudentsForPage(this.currentPageIndex + 1, this.currentPageSize);
     }
     else {
       console.log("error in handling paginator's event!!!");
+    }
+  }
+
+  handleSortEvent(sort: Sort) {
+    if(sort){
+
+      switch(sort.active){
+
+        case("id"):
+          this.dataSource.data = this.sortStudentsById(sort.direction);
+          break;
+
+        case("name"):
+          this.dataSource.data = this.sortStudentsByName(sort.direction);
+          break;
+
+        case("surname"):
+          this.dataSource.data = this.sortStudentsBySurname(sort.direction);
+          break;
+      }
+    }
+    else console.log("error in handling sort's event!!!");
+  }
+
+  sortStudentsById(directionOfSort: string): Student[] {
+    let students = this.dataSource.data;
+    switch(directionOfSort) {
+
+      case("asc"):
+        students = this.dataSource.data.sort((a,b) => {
+          if(a.id != null && b.id != null) {
+            return a.id - b.id;
+          }
+          return 0;
+        })
+        return students;
+
+      case("desc"):
+        students = this.dataSource.data.sort((a,b) => {
+          if(a.id != null && b.id != null) {
+            return b.id - a.id;
+          }
+          return 0;
+        })
+        return students;
+
+      case(""):
+        // this.mokkyServer.getStudentsForPagination(this.currentPageIndex, this.currentPageSize).subscribe( data => {
+        //   console.log(students);
+        //   students = data.items;
+        //   console.log(data.items);
+        //   console.log(students);
+        // })
+        this.loadStudents();
+        return this.dataSource.data;
+
+      default:
+        return students;
+    }
+  }
+  // костыль т.к не могу добиться правильного результата, вызвав асинхронную функцию в switch case выше
+  // либо делать возвращаемым значение Observable, либо как-то с промисами, либо так
+  loadStudents(){
+    this.mokkyServer.getStudentsForPagination(this.currentPageIndex, this.currentPageSize).subscribe(data => {
+      this.dataSource.data = data.items;
+    })
+  }
+
+  sortStudentsByName(directionOfSort: string): Student[] {
+
+    switch(directionOfSort) {
+
+      case("asc"):
+        return this.dataSource.data.sort((a,b) => {
+          return a.name.localeCompare(b.name);
+        });
+
+      case("desc"):
+        return this.dataSource.data.sort((a,b) => {
+          return b.name.localeCompare(a.name);
+        });
+
+      case(""):
+        this.loadStudents();
+        return this.dataSource.data;
+
+      default:
+        return this.dataSource.data;
+    }
+  }
+
+  sortStudentsBySurname(directionOfSort: string): Student[] {
+
+    switch(directionOfSort) {
+
+      case("asc"):
+        return this.dataSource.data.sort((a,b) => {
+          return a.surname.localeCompare(b.surname);
+        });
+
+      case("desc"):
+        return this.dataSource.data.sort((a,b) => {
+          return b.surname.localeCompare(a.surname);
+        });
+
+      case(""):
+        this.loadStudents();
+        return this.dataSource.data;
+
+      default:
+        return this.dataSource.data;
     }
   }
 
