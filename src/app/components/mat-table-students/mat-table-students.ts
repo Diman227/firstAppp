@@ -12,7 +12,6 @@ import {MatPaginator, MatPaginatorModule, PageEvent} from '@angular/material/pag
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-mat-table-students',
@@ -51,9 +50,10 @@ export class MatTableStudents {
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
 
   ngAfterViewInit() {
+    console.log("AfterViewInit");
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
-    setTimeout(() => this.paginator!.length = this.dataLength);
+    // setTimeout(() => this.paginator!.length = this.dataLength);
   }
 
   applyFilter(event: Event) {
@@ -66,6 +66,7 @@ export class MatTableStudents {
   }
 
   ngOnInit(): void {
+    console.log("OnInit");
     this.refreshTable();
     // this.dataSource.paginator = this.paginator;
   }
@@ -87,8 +88,6 @@ export class MatTableStudents {
           if(result != null) {
             console.log("adding new student: " + result.name);
             this.mokkyServer.addNewStudent(result).subscribe(() => {
-              // this.currentPageIndex = this.countOfPages; багается пагинатор
-
               this.refreshTable();
             }
             );
@@ -109,7 +108,6 @@ export class MatTableStudents {
     dialogEditingStudent.afterClosed().subscribe((result: Student) => {
       if(result != null) {
         console.log("editing student: " + result.name);
-        console.log('' + result);
         this.mokkyServer.editStudent(result).subscribe(() => this.refreshTable());
       }
     })
@@ -135,12 +133,9 @@ export class MatTableStudents {
 
     this.mokkyServer.getStudentsForPagination(this.currentPageIndex, limitOfStudentsForPage).subscribe( data => {
 
-      console.log(data.meta.per_page + " per-page");
       this.dataLength = data.meta.total_items;
       this.dataSource.data = data.items;
       this.countOfPages = data.meta.total_pages;
-      console.log('');
-
     }
     )
   }
@@ -148,8 +143,6 @@ export class MatTableStudents {
   handlePaginatorEvent(event?:PageEvent) {
     if(event){
 
-      // if (this.currentPageSize !== event.pageSize) this.currentPageIndex = 0;
-      // else
       this.currentPageIndex = event.pageIndex;
 
       this.currentPageSize = event.pageSize;
@@ -205,12 +198,6 @@ export class MatTableStudents {
         return students;
 
       case(""):
-        // this.mokkyServer.getStudentsForPagination(this.currentPageIndex, this.currentPageSize).subscribe( data => {
-        //   console.log(students);
-        //   students = data.items;
-        //   console.log(data.items);
-        //   console.log(students);
-        // })
         this.loadStudents();
         return this.dataSource.data;
 

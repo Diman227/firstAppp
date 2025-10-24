@@ -9,7 +9,6 @@ import { Student } from '../models/student';
 export class MokkyServer {
   private mokkyUrl = 'https://da0503ddcf4916d1.mokky.dev/students';
   private fullUrl = this.mokkyUrl;
-  private filterValue = "";
 
   constructor(private http: HttpClient) {};
 
@@ -32,14 +31,11 @@ export class MokkyServer {
   }
 
   getStudentsForPagination(pageNumber: number, limitOfStudentsForPage: number | undefined): Observable<any> {
-
-
     this.fullUrl = `${this.mokkyUrl}?page=${pageNumber}&limit=${limitOfStudentsForPage}`;
     return this.http.get<any>(this.fullUrl);
   }
 
   getFilteredStudents(filterValue: string, columnToFilter: string): Observable<any> {
-    this.filterValue = filterValue;
     this.fullUrl += `&${columnToFilter}=*${filterValue}`;
     return this.http.get<any>(this.fullUrl);
   }

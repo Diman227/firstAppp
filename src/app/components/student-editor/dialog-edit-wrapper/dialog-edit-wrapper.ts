@@ -65,7 +65,6 @@ export class DialogEditWrapper {
 
   onSaveOrAddClick(): void {
     if(this.isFormValid()){
-      console.log(this.isFormValid());
       this.data.name = this.nameInputControl.value;
       this.data.surname = this.surnameInputControl.value;
       this.dialogRef.close(this.data);

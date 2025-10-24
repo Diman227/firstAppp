@@ -67,6 +67,9 @@
               "buildTarget": "firstAppp:build:development"
             }
           },
+          "options": {
+            "proxyConfig": "src/app/proxy.conf.ts"
+          },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
