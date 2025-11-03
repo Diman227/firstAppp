@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { InMemoryData } from './in-memory-data';
+import { SpringServer } from './spring-server';
 
-describe('InMemoryData', () => {
-  let service: InMemoryData;
+describe('MokkyServer', () => {
+  let service: SpringServer;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(InMemoryData);
+    service = TestBed.inject(SpringServer);
   });
 
   it('should be created', () => {

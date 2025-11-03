@@ -13,8 +13,8 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes), provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch()),
-    importProvidersFrom([HttpClientInMemoryWebApiModule.forRoot(InMemoryData, {
-      passThruUnknownUrl: true
-    })]),
+    // importProvidersFrom([HttpClientInMemoryWebApiModule.forRoot(InMemoryData, {
+    //   passThruUnknownUrl: true
+    // })]),
   ]
 };

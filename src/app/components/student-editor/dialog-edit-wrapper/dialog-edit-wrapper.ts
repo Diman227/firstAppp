@@ -31,6 +31,9 @@ export class DialogEditWrapper {
   dialogBtnName: string;
   nameInputControl: FormControl;
   surnameInputControl: FormControl;
+  patronymicInputControl: FormControl;
+  groupInputControl: FormControl;
+  phonenumberInputControl: FormControl;
 
   constructor(public dialogRef: MatDialogRef<DialogEditWrapper>,
     @Inject(MAT_DIALOG_DATA) public data: Student) {
@@ -42,6 +45,16 @@ export class DialogEditWrapper {
       this.surnameInputControl = new FormControl(data.surname || null, [
         Validators.required,
         Validators.pattern('^[A-Za-zА-Яа-яЁё]+$')]);
+
+      this.patronymicInputControl = new FormControl(data.patronymic || null, [
+        Validators.required,
+        Validators.pattern('^[A-Za-zА-Яа-яЁё]+$')]);
+
+      this.groupInputControl = new FormControl(data.group || null, [
+        Validators.required]);
+
+      this.phonenumberInputControl = new FormControl(data.phoneNumber || null, [
+        Validators.required]);
 
     if(data.id != null) {
       this.dialogName = "Editing student";
@@ -60,13 +73,19 @@ export class DialogEditWrapper {
   }
 
   isFormValid(): boolean {
-    return (this.nameInputControl.valid && this.surnameInputControl.valid) ? true : false;
+    return (this.nameInputControl.valid && this.surnameInputControl.valid
+            && this.patronymicInputControl.valid && this.groupInputControl.valid
+            && this.phonenumberInputControl.valid)
+            ? true : false;
   }
 
   onSaveOrAddClick(): void {
     if(this.isFormValid()){
       this.data.name = this.nameInputControl.value;
       this.data.surname = this.surnameInputControl.value;
+      this.data.patronymic = this.patronymicInputControl.value;
+      this.data.group = this.groupInputControl.value;
+      this.data.phoneNumber = this.phonenumberInputControl.value;
       this.dialogRef.close(this.data);
     }
   }

@@ -6,6 +6,20 @@
 
   <mat-form-field class="full-width-input">
 
+    <input matInput type="text" placeholder="Surname of student"
+    [formControl]="surnameInputControl" required>
+
+    @if(surnameInputControl.hasError('required')){
+      <mat-error>Фамилия обязательно</mat-error>
+    }
+    @if(surnameInputControl.hasError('pattern')) {
+      <mat-error>Только буквы разрешены</mat-error>
+    }
+
+  </mat-form-field>
+
+  <mat-form-field class="full-width-input">
+
     <input matInput placeholder="Name of student"
     [formControl]="nameInputControl">
 
@@ -20,21 +34,42 @@
 
   <mat-form-field class="full-width-input">
 
-    <input matInput type="text" placeholder="Surname of student"
-    [formControl]="surnameInputControl" required>
+    <input matInput type="text" placeholder="Patronymic of student"
+    [formControl]="patronymicInputControl" required>
 
-    @if(surnameInputControl.hasError('required')){
-      <mat-error>Фамилия обязательно</mat-error>
+    @if(patronymicInputControl.hasError('required')){
+      <mat-error>Отчество обязательно</mat-error>
     }
-    @if(surnameInputControl.hasError('pattern')) {
+    @if(patronymicInputControl.hasError('pattern')) {
       <mat-error>Только буквы разрешены</mat-error>
+    }
+
+  </mat-form-field>
+
+  <mat-form-field class="full-width-input">
+
+    <input matInput type="text" placeholder="Student's group"
+    [formControl]="groupInputControl" required>
+
+    @if(groupInputControl.hasError('required')){
+      <mat-error>Группа обязательна</mat-error>
+    }
+
+  </mat-form-field>
+
+  <mat-form-field class="full-width-input">
+
+    <input matInput type="text" placeholder="Student's phonenumber"
+    [formControl]="phonenumberInputControl" required>
+
+    @if(phonenumberInputControl.hasError('required')){
+      <mat-error>Номер обязательно</mat-error>
     }
 
   </mat-form-field>
 </div>
 <div mat-dialog-actions>
   <button mat-raised-button (click)="onNoClick()">Cancel</button>
-
 
   <button class="right-align" mat-raised-button color="primary"
     [mat-dialog-close]="data" [disabled]="!isFormValid()" (click)="onSaveOrAddClick()">{{ dialogBtnName }}</button>

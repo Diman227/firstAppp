@@ -1,4 +1,4 @@
-import { MokkyServer } from './../../service/mokky-server';
+import { SpringServer } from '../../service/spring-server';
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableModule, MatTableDataSource} from '@angular/material/table';
@@ -12,6 +12,9 @@ import {MatPaginator, MatPaginatorModule, PageEvent} from '@angular/material/pag
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
+import { group } from 'node:console';
+import { eventNames } from 'node:process';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-mat-table-students',
@@ -30,20 +33,25 @@ import {MatIconModule} from '@angular/material/icon';
   styleUrl: './mat-table-students.css'
 })
 export class MatTableStudents {
-  displayedColumns: string[] = ['id', 'name', 'surname', 'actions'];
+  displayedColumns: string[] = ['id','surname', 'name', 'patronymic', 'group', 'phoneNumber', 'actions'];
   dataSource: MatTableDataSource<Student>;
   dataLength: number;
   countOfPages: number;
   currentPageIndex: number;
   currentPageSize: number;
+  sortActive: string;
+  sortDirection: string;
+  filterValue: string;
 
-  constructor(private mokkyServer: MokkyServer, public dialog: MatDialog) {
+  constructor(private springServer: SpringServer, public dialog: MatDialog) {
     this.dataSource = new MatTableDataSource<Student>;
     this.dataLength = 0;
-    this.currentPageIndex = 1;
+    this.currentPageIndex = 0;
     this.currentPageSize = 5;
     this.countOfPages = 0;
-
+    this.sortActive = '';
+    this.sortDirection = '';
+    this.filterValue = '';
   }
 
   @ViewChild(MatSort) sort: MatSort | undefined;
@@ -53,12 +61,16 @@ export class MatTableStudents {
     console.log("AfterViewInit");
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
-    // setTimeout(() => this.paginator!.length = this.dataLength);
   }
 
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.filterValue = (event.target as HTMLInputElement).value;
+    // this.dataSource.filter = filterValue.trim().toLowerCase();
+
+     this.springServer.getStudentsForPagination(this.currentPageIndex, this.currentPageSize, this.sortActive, this.sortDirection, this.filterValue).subscribe(data => {
+      this.dataSource.data = data.content;
+      this.dataLength = data.totalElements;
+    });
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
@@ -68,11 +80,11 @@ export class MatTableStudents {
   ngOnInit(): void {
     console.log("OnInit");
     this.refreshTable();
-    // this.dataSource.paginator = this.paginator;
+    this.dataSource.paginator = this.paginator;
   }
 
   refreshTable() {
-    this.getStudentsForPage(this.currentPageIndex, this.currentPageSize);
+    this.getStudents();
   }
 
   addNewStudent(): void {
@@ -82,12 +94,15 @@ export class MatTableStudents {
             id: null,
             name: '',
             surname: '',
+            patronymic: '',
+            group: '',
+            phoneNumber: '',
           }
         });
         dialogAddingNewStudent.afterClosed().subscribe((result: Student) => {
           if(result != null) {
             console.log("adding new student: " + result.name);
-            this.mokkyServer.addNewStudent(result).subscribe(() => {
+            this.springServer.addNewStudent(result).subscribe(() => {
               this.refreshTable();
             }
             );
@@ -100,6 +115,9 @@ export class MatTableStudents {
       id: student.id,
       name: student.name,
       surname: student.surname,
+      patronymic: student.patronymic,
+      group: student.group,
+      phoneNumber: student.phoneNumber,
     }
     const dialogEditingStudent = this.dialog.open(DialogEditWrapper, {
       width: '400px',
@@ -108,46 +126,43 @@ export class MatTableStudents {
     dialogEditingStudent.afterClosed().subscribe((result: Student) => {
       if(result != null) {
         console.log("editing student: " + result.name);
-        this.mokkyServer.editStudent(result).subscribe(() => this.refreshTable());
+        this.springServer.editStudent(result).subscribe(() => this.refreshTable());
       }
     })
   }
 
   deleteStudent(student: Student): void {
     console.log('deleting student!');
-    this.mokkyServer.deleteStudent(student).subscribe(() => {
-      if (this.dataLength % 5 == 1) --this.currentPageIndex; // багается пагинатор
+    this.springServer.deleteStudent(student).subscribe(() => {
+      if (this.dataLength % 5 == 1) --this.currentPageIndex; // ??багается пагинатор
       this.refreshTable();
     }
     );
   }
 
-  getStudentsForPage(pageNumber: number, limitOfStudentsForPage: number) {
-    this.currentPageIndex = pageNumber;
-
-    if(this.dataSource.paginator){
-        this.dataSource.paginator.length = this.dataLength;
-        this.dataSource.paginator.pageIndex = this.currentPageIndex - 1;
-        this.dataSource.paginator.pageSize = this.currentPageSize;
-    }
-
-    this.mokkyServer.getStudentsForPagination(this.currentPageIndex, limitOfStudentsForPage).subscribe( data => {
-
-      this.dataLength = data.meta.total_items;
-      this.dataSource.data = data.items;
-      this.countOfPages = data.meta.total_pages;
-    }
-    )
+  getStudents() {
+    this.springServer.getStudentsForPagination(this.currentPageIndex, this.currentPageSize, this.sortActive, this.sortDirection, this.filterValue).subscribe(data => {
+      this.dataSource.data = data.content;
+      this.dataLength = data.totalElements;
+    })
   }
 
   handlePaginatorEvent(event?:PageEvent) {
     if(event){
-
-      this.currentPageIndex = event.pageIndex;
+      if(event.pageSize != this.currentPageSize && this.sort){
+        this.sort.direction = '';
+        this.currentPageIndex = 0;
+        this.sortActive = '';
+        this.sortDirection = '';
+      }
+      else this.currentPageIndex = event.pageIndex;
+      if(this.paginator){
+        this.paginator.pageIndex = this.currentPageIndex;
+      }
 
       this.currentPageSize = event.pageSize;
-
-      this.getStudentsForPage(this.currentPageIndex + 1, this.currentPageSize);
+      this.updatePaginator();
+      this.getStudents();
     }
     else {
       console.log("error in handling paginator's event!!!");
@@ -156,106 +171,22 @@ export class MatTableStudents {
 
   handleSortEvent(sort: Sort) {
     if(sort){
-
-      switch(sort.active){
-
-        case("id"):
-          this.dataSource.data = this.sortStudentsById(sort.direction);
-          break;
-
-        case("name"):
-          this.dataSource.data = this.sortStudentsByName(sort.direction);
-          break;
-
-        case("surname"):
-          this.dataSource.data = this.sortStudentsBySurname(sort.direction);
-          break;
+      console.log(sort);
+      this.sortActive = sort.active;
+      this.sortDirection = sort.direction;
+      if(sort.direction == ''){
+        this.sortActive = '';
+        this.sortDirection = '';
       }
+      console.log(" dfsfsdf");
+      this.getStudents();
     }
     else console.log("error in handling sort's event!!!");
   }
 
-  sortStudentsById(directionOfSort: string): Student[] {
-    let students = this.dataSource.data;
-    switch(directionOfSort) {
-
-      case("asc"):
-        students = this.dataSource.data.sort((a,b) => {
-          if(a.id != null && b.id != null) {
-            return a.id - b.id;
-          }
-          return 0;
-        })
-        return students;
-
-      case("desc"):
-        students = this.dataSource.data.sort((a,b) => {
-          if(a.id != null && b.id != null) {
-            return b.id - a.id;
-          }
-          return 0;
-        })
-        return students;
-
-      case(""):
-        this.loadStudents();
-        return this.dataSource.data;
-
-      default:
-        return students;
-    }
-  }
-  // костыль т.к не могу добиться правильного результата, вызвав асинхронную функцию в switch case выше
-  // либо делать возвращаемым значение Observable, либо как-то с промисами, либо так
-  loadStudents(){
-    this.mokkyServer.getStudentsForPagination(this.currentPageIndex, this.currentPageSize).subscribe(data => {
-      this.dataSource.data = data.items;
-    })
-  }
-
-  sortStudentsByName(directionOfSort: string): Student[] {
-
-    switch(directionOfSort) {
-
-      case("asc"):
-        return this.dataSource.data.sort((a,b) => {
-          return a.name.localeCompare(b.name);
-        });
-
-      case("desc"):
-        return this.dataSource.data.sort((a,b) => {
-          return b.name.localeCompare(a.name);
-        });
-
-      case(""):
-        this.loadStudents();
-        return this.dataSource.data;
-
-      default:
-        return this.dataSource.data;
-    }
-  }
-
-  sortStudentsBySurname(directionOfSort: string): Student[] {
-
-    switch(directionOfSort) {
-
-      case("asc"):
-        return this.dataSource.data.sort((a,b) => {
-          return a.surname.localeCompare(b.surname);
-        });
-
-      case("desc"):
-        return this.dataSource.data.sort((a,b) => {
-          return b.surname.localeCompare(a.surname);
-        });
-
-      case(""):
-        this.loadStudents();
-        return this.dataSource.data;
-
-      default:
-        return this.dataSource.data;
+  updatePaginator(): void {
+    if(this.dataSource.paginator){
+      this.dataSource.paginator.pageSize = this.currentPageSize;
     }
   }
 
