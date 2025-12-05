@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { filter, Observable } from 'rxjs';
 import { Student } from '../models/student';
@@ -8,7 +8,7 @@ import { Sort } from '@angular/material/sort';
   providedIn: 'root'
 })
 export class SpringServer {
-  private apiUrl = 'http://localhost:8080/api/base/students/filter';
+  private apiUrl = 'http://localhost:4200/api/base/students/filter';
   private paginatedUrl = '';
   private fullUrl = '';
 
@@ -41,6 +41,10 @@ export class SpringServer {
 
   getStudentsForPagination(pageNumber: number, limitOfStudentsForPage: number, sortActive: string, sortDirection: string, filterValue: string): Observable<any> {
 
+    const headers = new HttpHeaders({
+      Authorization: '' + localStorage.getItem('token'),
+      'Access-Control-Allow-Origin': '*',
+    })
     this.fullUrl = this.paginatedUrl = `${this.apiUrl}?page=${pageNumber}&size=${limitOfStudentsForPage}`;
 
     if(sortActive && sortDirection){
@@ -51,7 +55,7 @@ export class SpringServer {
       this.fullUrl += `&filter=${filterValue}`;
     }
 
-    return this.http.get<any>(this.fullUrl);
+    return this.http.get<any>(this.fullUrl, { headers });
   }
 
 }

@@ -1,4 +1,4 @@
-const route = '/api/base';
+const route = '/api';
 
 const config = {
   target: "http://localhost:8080",

@@ -1,0 +1,48 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #121f56 0%, #450288 100%);
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #121f56 0%, #450288 100%);
+  position: fixed;
+  padding: 0;
+  margin: 0;
+}
+
+.auth-card-title {
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.switch-mode-btn {
+  margin-top: 8px;
+}

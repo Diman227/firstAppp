@@ -1,5 +1,6 @@
+import { AuthService } from './../../service/auth-service';
 import { SpringServer } from '../../service/spring-server';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableModule, MatTableDataSource} from '@angular/material/table';
 import { FormsModule } from '@angular/forms';
@@ -15,6 +16,7 @@ import {MatIconModule} from '@angular/material/icon';
 import { group } from 'node:console';
 import { eventNames } from 'node:process';
 import { filter } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mat-table-students',
@@ -43,7 +45,7 @@ export class MatTableStudents {
   sortDirection: string;
   filterValue: string;
 
-  constructor(private springServer: SpringServer, public dialog: MatDialog) {
+  constructor(private springServer: SpringServer, public dialog: MatDialog, private authService: AuthService, private router: Router) {
     this.dataSource = new MatTableDataSource<Student>;
     this.dataLength = 0;
     this.currentPageIndex = 0;
@@ -52,6 +54,7 @@ export class MatTableStudents {
     this.sortActive = '';
     this.sortDirection = '';
     this.filterValue = '';
+    // if(!this.authService.isUserAuthenticated()) this.router.navigate(['/login']);
   }
 
   @ViewChild(MatSort) sort: MatSort | undefined;
