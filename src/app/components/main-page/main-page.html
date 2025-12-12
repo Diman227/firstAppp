@@ -1,0 +1,45 @@
+<mat-sidenav-container class="example-container">
+
+  <mat-sidenav #sidenav mode="side" opened>
+    <div id="open-close-btn">
+      <button matButton="outlined" (click)="sidenav.toggle()">
+
+        @if (isMenuOpened) {
+          <mat-icon><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="rgb(111, 132, 132)"><path d="M360-120v-720h80v720h-80Zm160-160v-400l200 200-200 200Z"/></svg></mat-icon>
+        }
+
+        @else {
+          <mat-icon><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="rgb(111, 132, 132)"><path d="M360-120v-720h80v720h-80Zm160-160v-400l200 200-200 200Z"/></svg></mat-icon>
+        }
+
+      </button><br>
+    </div>
+
+    <div class="user-info">
+      <b>Ваш профиль:</b><br>
+      Фамилия: {{this.user.surname}}<br>
+      Имя: {{this.user.name}}<br>
+      Отчество: {{this.user.patronymic}}<br>
+      Роль: {{this.user.role.toLowerCase()}}<br>
+    </div>
+
+    <div class="side-btns">
+      <button matButton="outlined">Группа</button><br>
+
+      @if(this.user.role != "STUDENT") {
+        <button matButton="outlined">Люди</button><br>
+      }
+    </div>
+
+    <div id="logOut-btn">
+      <button matButton="outlined" (click)="logOut()">Выйти</button><br>
+    </div>
+
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+     <router-outlet></router-outlet>
+  </mat-sidenav-content>
+
+</mat-sidenav-container>
+

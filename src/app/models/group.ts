@@ -1,10 +1,12 @@
 export class Group{
 
   constructor(){
-    this.username = '';
-    this.password = '';
+    this.id = null;
+    this.nameOfGroup = '';
+    // this.password = '';
     }
 
-  username: string;
-  password: string;
+  id: number | null;
+  nameOfGroup: string;
+  // password: string;
 }

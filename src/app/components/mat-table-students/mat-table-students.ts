@@ -13,9 +13,6 @@ import {MatPaginator, MatPaginatorModule, PageEvent} from '@angular/material/pag
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import { group } from 'node:console';
-import { eventNames } from 'node:process';
-import { filter } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Component({
@@ -35,7 +32,7 @@ import { Router } from '@angular/router';
   styleUrl: './mat-table-students.css'
 })
 export class MatTableStudents {
-  displayedColumns: string[] = ['id','surname', 'name', 'patronymic', 'group', 'phoneNumber', 'actions'];
+  displayedColumns: string[] = ['id','surname', 'name', 'patronymic', 'group', 'actions'];
   dataSource: MatTableDataSource<Student>;
   dataLength: number;
   countOfPages: number;
@@ -68,7 +65,6 @@ export class MatTableStudents {
 
   applyFilter(event: Event) {
     this.filterValue = (event.target as HTMLInputElement).value;
-    // this.dataSource.filter = filterValue.trim().toLowerCase();
 
      this.springServer.getStudentsForPagination(this.currentPageIndex, this.currentPageSize, this.sortActive, this.sortDirection, this.filterValue).subscribe(data => {
       this.dataSource.data = data.content;
@@ -99,7 +95,6 @@ export class MatTableStudents {
             surname: '',
             patronymic: '',
             group: '',
-            phoneNumber: '',
           }
         });
         dialogAddingNewStudent.afterClosed().subscribe((result: Student) => {
@@ -120,7 +115,6 @@ export class MatTableStudents {
       surname: student.surname,
       patronymic: student.patronymic,
       group: student.group,
-      phoneNumber: student.phoneNumber,
     }
     const dialogEditingStudent = this.dialog.open(DialogEditWrapper, {
       width: '400px',

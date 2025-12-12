@@ -33,7 +33,6 @@ export class DialogEditWrapper {
   surnameInputControl: FormControl;
   patronymicInputControl: FormControl;
   groupInputControl: FormControl;
-  phonenumberInputControl: FormControl;
 
   constructor(public dialogRef: MatDialogRef<DialogEditWrapper>,
     @Inject(MAT_DIALOG_DATA) public data: Student) {
@@ -51,9 +50,6 @@ export class DialogEditWrapper {
         Validators.pattern('^[A-Za-zА-Яа-яЁё]+$')]);
 
       this.groupInputControl = new FormControl(data.group || null, [
-        Validators.required]);
-
-      this.phonenumberInputControl = new FormControl(data.phoneNumber || null, [
         Validators.required]);
 
     if(data.id != null) {
@@ -74,8 +70,7 @@ export class DialogEditWrapper {
 
   isFormValid(): boolean {
     return (this.nameInputControl.valid && this.surnameInputControl.valid
-            && this.patronymicInputControl.valid && this.groupInputControl.valid
-            && this.phonenumberInputControl.valid)
+            && this.patronymicInputControl.valid && this.groupInputControl.valid)
             ? true : false;
   }
 
@@ -85,7 +80,6 @@ export class DialogEditWrapper {
       this.data.surname = this.surnameInputControl.value;
       this.data.patronymic = this.patronymicInputControl.value;
       this.data.group = this.groupInputControl.value;
-      this.data.phoneNumber = this.phonenumberInputControl.value;
       this.dialogRef.close(this.data);
     }
   }

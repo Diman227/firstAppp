@@ -25,6 +25,7 @@ import { MatCardModule } from '@angular/material/card';
 })
 export class LogInComponent {
   public user: User = {
+    id: null,
     username: '',
     password: '',
     surname: '',
@@ -43,7 +44,7 @@ export class LogInComponent {
   logInClicked(user: User): void {
     this.authSerive.logIn(user).subscribe({
       next: (response) => {
-        this.router.navigate(['/students']).then(success => {
+        this.router.navigate(['/main/students']).then(success => {
           console.log('Navigaton successful!');
         });
       },
@@ -54,7 +55,7 @@ export class LogInComponent {
   }
 
   regUpClicked(): void {
-    this.router.navigate(['/register']);
+    this.router.navigate(['/registration']);
   }
 
 }

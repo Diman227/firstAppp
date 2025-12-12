@@ -57,16 +57,6 @@
 
   </mat-form-field>
 
-  <mat-form-field class="full-width-input">
-
-    <input matInput type="text" placeholder="Student's phonenumber"
-    [formControl]="phonenumberInputControl" required>
-
-    @if(phonenumberInputControl.hasError('required')){
-      <mat-error>Номер обязательно</mat-error>
-    }
-
-  </mat-form-field>
 </div>
 <div mat-dialog-actions>
   <button mat-raised-button (click)="onNoClick()">Cancel</button>

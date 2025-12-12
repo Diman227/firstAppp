@@ -1,1 +1,71 @@
-<p>registration-component works!</p>
+<div class="auth-container">
+  <mat-card class="auth-card">
+    <mat-card-header class="auth-card-title">
+      <mat-card-title>
+        {{'Регистрация'}}
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form (ngSubmit)="onRegisterClicked(user)" class="auth-form">
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Логин</mat-label>
+          <input matInput placeholder="login" [(ngModel)]="user.username" name="login" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Фамилия</mat-label>
+          <input matInput placeholder="surname" [(ngModel)]="user.surname" name="surname" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Имя</mat-label>
+          <input matInput placeholder="name" [(ngModel)]="user.name" name="name" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Отчество</mat-label>
+          <input matInput placeholder="patronymic" [(ngModel)]="user.patronymic" name="patronymic" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Пароль</mat-label>
+          <input matInput placeholder="password"  type="password" [(ngModel)]="user.password" name="password" required>
+        </mat-form-field>
+
+        <mat-radio-group aria-label="Select the role" [(ngModel)]="user.role">
+          @for(role of roles; track role){
+            <mat-radio-button [value]="role">{{role}}</mat-radio-button>
+          }
+
+          <!-- <mat-radio-button [value]="roleTeacher">Учитель</mat-radio-button> -->
+        </mat-radio-group>
+
+        <p>Текущая роль: {{ user.role }}</p>
+
+        @if (user.role == "STUDENT") {
+          <mat-form-field>
+            <mat-label>Выберите группу</mat-label>
+            <mat-select [(ngModel)]="user.groupId" name="groupId" required>
+              <mat-option value="" disabled>Выберите группу</mat-option>
+              @for (group of groups; track group.id) {
+                <mat-option [value]="group.id">{{group.nameOfGroup}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+
+        <div class="auth-actions">
+          <button mat-raised-button color="primary" type="submit" class="full-width">
+            {{ 'Зарегистрироваться' }}
+          </button>
+
+          <button mat-button type="button" (click)="logInClicked()" class="switch-mode-btn">
+            {{ 'Есть аккаунт? Войти' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

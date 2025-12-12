@@ -14,7 +14,7 @@ export class BasicAuthHttpInterceptorService implements HttpInterceptor{
     if (localStorage.getItem('username') && localStorage.getItem('token')) {
       req = req.clone({
         setHeaders: {
-          Authorization: `${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         }
       })
       console.log(localStorage.getItem('token'));

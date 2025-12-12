@@ -1,6 +1,7 @@
 export class User{
 
   constructor(){
+    this.id = null;
     this.username = '';
     this.password = '';
     this.surname = '';
@@ -10,6 +11,7 @@ export class User{
     this.groupId = null;
     }
 
+  id: number | null;
   username: string;
   password: string;
   surname: string;
