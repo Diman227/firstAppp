@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { filter, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Student } from '../models/student';
 import { Sort } from '@angular/material/sort';
 
@@ -55,9 +55,9 @@ export class SpringServer {
     return this.http.get<any>(this.fullUrl, { headers });
   }
 
-
-  getAllGroupNames(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/groups/names`)
+  getAllTeachers(): Observable<any> {
+    let tempUrl = `${this.apiUrl}/teachers`;
+    return this.http.get<any>(tempUrl);
   }
 }
 

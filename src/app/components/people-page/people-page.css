@@ -1,0 +1,45 @@
+th {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+td {
+  font-size: 18px;
+}
+
+td, th {
+  width: 25%;
+}
+
+button {
+  margin-bottom: 5px;
+  font-size: 20px;
+  padding: 6px;
+  font-style: italic;
+}
+
+.header {
+  text-align: center;
+  font-size: 24px;
+}
+
+.comp {
+  text-align: center;
+}
+
+.mat-mdc-form-field {
+  font-size: 18px;
+  width: 100%;
+}
+
+button {
+  margin-right: 5px;
+  background-color: darkgrey;
+}
+
+.biba {
+  td {
+    width: 100px;
+    background-color: aquamarine;
+  }
+}

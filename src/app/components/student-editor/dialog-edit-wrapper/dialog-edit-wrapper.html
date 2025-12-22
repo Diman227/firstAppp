@@ -48,12 +48,13 @@
 
   <mat-form-field class="full-width-input">
 
-    <input matInput type="text" placeholder="Student's group"
-    [formControl]="groupInputControl" required>
-
-    @if(groupInputControl.hasError('required')){
-      <mat-error>Группа обязательна</mat-error>
-    }
+            <mat-label>Выберите группу</mat-label>
+            <mat-select [(ngModel)]="groupId" name="groupId" required>
+              <mat-option value="" disabled>Выберите группу</mat-option>
+              @for (group of groups; track group.id) {
+                <mat-option [value]="group.id">{{group.nameOfGroup}}</mat-option>
+              }
+            </mat-select>
 
   </mat-form-field>
 

@@ -44,7 +44,7 @@ export class LogInComponent {
   logInClicked(user: User): void {
     this.authSerive.logIn(user).subscribe({
       next: (response) => {
-        this.router.navigate(['/main/students']).then(success => {
+        this.router.navigate(['/main/group']).then(success => {
           console.log('Navigaton successful!');
         });
       },

@@ -1,7 +1,7 @@
 <mat-sidenav-container class="example-container">
 
   <mat-sidenav #sidenav mode="side" opened>
-    <div id="open-close-btn">
+    <!-- <div id="open-close-btn">
       <button matButton="outlined" (click)="sidenav.toggle()">
 
         @if (isMenuOpened) {
@@ -13,21 +13,28 @@
         }
 
       </button><br>
-    </div>
+    </div> -->
 
     <div class="user-info">
       <b>Ваш профиль:</b><br>
-      Фамилия: {{this.user.surname}}<br>
-      Имя: {{this.user.name}}<br>
-      Отчество: {{this.user.patronymic}}<br>
-      Роль: {{this.user.role.toLowerCase()}}<br>
+      @if(user.role == "ADMIN") {
+        Логин: {{user.username}}<br>
+        Роль: {{user.role.toLocaleLowerCase()}}<br>
+      }
+      @else {
+        Фамилия: {{this.user.surname}}<br>
+        Имя: {{this.user.name}}<br>
+        Отчество: {{this.user.patronymic}}<br>
+        Роль: {{this.user.role.toLowerCase()}}<br>
+      }
+
     </div>
 
     <div class="side-btns">
-      <button matButton="outlined">Группа</button><br>
+      <button matButton="outlined" (click)="goToGroupComponent()">Группа</button><br>
 
-      @if(this.user.role != "STUDENT") {
-        <button matButton="outlined">Люди</button><br>
+      @if(user.role == "ADMIN") {
+        <button matButton="outlined" (click)="goToPeopleComponent()">Люди</button><br>
       }
     </div>
 

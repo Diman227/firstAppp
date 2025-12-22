@@ -3,13 +3,13 @@ import { MatTableStudents } from './components/mat-table-students/mat-table-stud
 import { LogInComponent } from './components/log-in-component/log-in-component';
 import { RegistrationComponent } from './components/registration-component/registration-component';
 import { MainPage } from './components/main-page/main-page';
-import { GroupPage } from './components/group-page/group-page';
+import { PeoplePage } from './components/people-page/people-page';
 
 export const routes: Routes = [
   { path: 'main', component: MainPage,
     children: [
-      { path: 'students', component: MatTableStudents},
-      { path: 'groups', component: GroupPage}
+      { path: 'people', component: PeoplePage},
+      { path: 'group', component: MatTableStudents}
     ]
   },
 

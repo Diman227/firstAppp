@@ -39,18 +39,42 @@ export class MainPage {
     }
     else {
       this.authService.getUserInfo().subscribe( data => {
-        this.user = data;
-        this.user.role = this.authService.getUserRole();
+        if(data != null) {
+          this.user = data;
+          this.user.role = this.authService.getUserRole();
+          console.log("user.role - " + this.user.role);
+          localStorage.setItem("userId", data.id!.toString())
+          if(this.user.groupId != null){
+            localStorage.setItem("group", this.user.groupId.toString());
+          }
+        }
+        else {
+          let username = localStorage.getItem("username");
+          let role = localStorage.getItem("role");
+          if(username && role) {
+            this.user.username = username;
+            this.user.role = role;
+          }
+        }
+
       });
 
     }
   }
 
-  changeSize(): void {
+  changeNavbarSize(): void {
 
   }
 
   logOut(): void {
     this.authService.logOut();
+  }
+
+  goToGroupComponent(): void {
+    this.router.navigate(['main/group']);
+  }
+
+  goToPeopleComponent(): void {
+    this.router.navigate(['main/people']);
   }
 }

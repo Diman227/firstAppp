@@ -13,6 +13,7 @@ import { MatCardModule } from '@angular/material/card';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSelectModule} from '@angular/material/select';
 import { Group } from '../../models/group';
+import { GroupService } from '../../service/group-service';
 
 @Component({
   selector: 'app-registration-component',
@@ -46,12 +47,12 @@ export class RegistrationComponent {
 
 
   ngOnInit(): void {
-    this.springServer.getAllGroupNames().subscribe( data => {
+    this.groupService.getAllGroupNames().subscribe( data => {
       this.groups = data;
-    })
+    });
   }
 
-  constructor(private springServer: SpringServer, private authSerive: AuthService, private router: Router) {}
+  constructor(private groupService: GroupService, private authSerive: AuthService, private router: Router) {}
 
   onRegisterClicked(user: User): void {
     this.authSerive.registrateUser(user).subscribe(() => console.log('registration'));

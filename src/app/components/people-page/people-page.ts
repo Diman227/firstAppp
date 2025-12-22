@@ -1,6 +1,6 @@
+import { Component } from '@angular/core';
 import { AuthService } from './../../service/auth-service';
 import { SpringServer } from '../../service/spring-server';
-import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableModule, MatTableDataSource} from '@angular/material/table';
 import { FormsModule } from '@angular/forms';
@@ -17,9 +17,11 @@ import { Router } from '@angular/router';
 import { Group } from '../../models/group';
 import { GroupService } from '../../service/group-service';
 import {MatSelectChange, MatSelectModule} from '@angular/material/select';
+import { User } from '../../models/user';
+import { Teacher } from '../../models/teacher';
 
 @Component({
-  selector: 'app-mat-table-students',
+  selector: 'app-group-page',
   imports: [
     MatTableModule,
     FormsModule,
@@ -30,13 +32,14 @@ import {MatSelectChange, MatSelectModule} from '@angular/material/select';
     MatButtonModule,
     MatIconModule,
     MatSelectModule
-],
-  templateUrl: './mat-table-students.html',
-  styleUrl: './mat-table-students.css'
+  ],
+  templateUrl: './people-page.html',
+  styleUrl: './people-page.css'
 })
-export class MatTableStudents {
-  displayedColumns: string[] = ['id','surname', 'name', 'patronymic', 'group', 'actions'];
-  dataSource: MatTableDataSource<Student>;
+export class PeoplePage {
+  displayedColumns: string[] = ['id','surname', 'name', 'patronymic', 'group', 'role', 'actions'];
+  categories: string[] = ['Студенты', 'Преподаватели', 'Группы'];
+  dataSource: MatTableDataSource<User>;
   dataLength: number;
   countOfPages: number;
   currentPageIndex: number;
@@ -44,6 +47,8 @@ export class MatTableStudents {
   sortActive: string;
   sortDirection: string;
   filterValue: string;
+  currentOption: string;
+  addBtnName: string;
 
   // переменная отвечает за группу -> в запрос добавляется эта группа(фильтр) -> работает для всех ролей(комбобокс)
 
@@ -55,7 +60,7 @@ export class MatTableStudents {
   groups?: Group[];
 
   constructor(private springServer: SpringServer, public dialog: MatDialog, private authService: AuthService, private router: Router, private groupService: GroupService) {
-    this.dataSource = new MatTableDataSource<Student>;
+    this.dataSource = new MatTableDataSource<User>;
     this.dataLength = 0;
     this.currentPageIndex = 0;
     this.currentPageSize = 5;
@@ -63,6 +68,8 @@ export class MatTableStudents {
     this.sortActive = '';
     this.sortDirection = '';
     this.filterValue = '';
+    this.currentOption = '';
+    this.addBtnName = "Add new Student";
   }
 
   @ViewChild(MatSort) sort: MatSort | undefined;
@@ -88,8 +95,6 @@ export class MatTableStudents {
     console.log("OnInit");
     this.refreshTable();
     this.dataSource.paginator = this.paginator;
-
-    this.getGroupsAndStudentsFromGroup();
 
   }
 
@@ -199,58 +204,27 @@ export class MatTableStudents {
   }
 
   onSelectionChange(event: MatSelectChange): void {
+    switch (event.value){
+      case "students":
 
-    if(event.value != 0) {
-      this.loadStudentsForGroup(event.value);
+        break;
+
+      case "teachers":
+        this.getAllTeachers();
+        break;
+
+      case "groups":
+
+        break;
+
     }
 
-    else if(this.getUserRole() == "ADMIN") {
-      this.getStudents();
-    }
+
   }
 
-  getUserRole(): string {
-    return this.authService.getUserRole();
-  }
-
-  getUserId(): string | null {
-    return localStorage.getItem("userId");
-  }
-
-  getGroupsAndStudentsFromGroup(): void {
-    if(this.getUserRole() == "STUDENT" || this.getUserRole() == "TEACHER") { // подумать
-      let groupId = parseInt(localStorage.getItem("group") || "0");
-      this.loadStudentsForGroup(groupId);
-    }
-
-    if(this.getUserRole() == "TEACHER") {
-      let teacherId: number = parseInt(localStorage.getItem("userId") || "0");
-
-      if(teacherId == 0) {
-        console.log("the id ccan't be 0");
-      }
-
-      else {
-        this.groupService.getTeacherGroups(teacherId).subscribe( data => {
-        this.groups = data;
-      })
-      }
-    }
-
-    if(this.getUserRole() == "ADMIN") {
-      this.groupService.getAllGroupNames().subscribe( data => {
-      this.groups = data;
-    });
-    }
-  }
-
-  loadStudentsForGroup(groupId: number) {
-    this.groupService.getStudentGroup(groupId).subscribe( data => {
-      this.dataSource.data = data.students;
-      this.dataSource.data.forEach( student => {
-          student.group = this.group.nameOfGroup = data.nameOfGroup;
-      });
-    }
-    )
+  getAllTeachers(): void {
+    this.springServer.getAllTeachers().subscribe( data => {
+      this.dataSource.data = data;
+    })
   }
 }

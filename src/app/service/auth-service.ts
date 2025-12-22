@@ -72,7 +72,8 @@ export class AuthService {
 
   getUserRole(): any {
     if(this.isAuthorized()){
-      return this.getInfoFromToken(this.JWT).role[0].authority;
+      let role = this.getInfoFromToken(this.JWT).role[0].authority;
+      return role;
     }
 
   }

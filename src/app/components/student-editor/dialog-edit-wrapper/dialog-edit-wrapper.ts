@@ -1,3 +1,4 @@
+import { GroupService } from './../../../service/group-service';
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Student } from '../../../models/student';
@@ -9,6 +10,10 @@ import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { Group } from '../../../models/group';
+import { SpringServer } from '../../../service/spring-server';
+import {MatSelectModule} from '@angular/material/select';
+import { AuthService } from '../../../service/auth-service';
 
 @Component({
   selector: 'app-dialog-edit-wrapper',
@@ -22,6 +27,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatButton,
     CommonModule,
     ReactiveFormsModule,
+    MatSelectModule,
   ],
   templateUrl: './dialog-edit-wrapper.html',
   styleUrl: './dialog-edit-wrapper.css'
@@ -32,9 +38,11 @@ export class DialogEditWrapper {
   nameInputControl: FormControl;
   surnameInputControl: FormControl;
   patronymicInputControl: FormControl;
-  groupInputControl: FormControl;
+  groups: Group[] = new Array();
+  group: Group;
+  groupId: number | null = null;
 
-  constructor(public dialogRef: MatDialogRef<DialogEditWrapper>,
+  constructor(private groupService: GroupService, private authService: AuthService , private springServer:SpringServer, public dialogRef: MatDialogRef<DialogEditWrapper>,
     @Inject(MAT_DIALOG_DATA) public data: Student) {
 
       this.nameInputControl = new FormControl(data.name || null, [
@@ -49,9 +57,6 @@ export class DialogEditWrapper {
         Validators.required,
         Validators.pattern('^[A-Za-zА-Яа-яЁё]+$')]);
 
-      this.groupInputControl = new FormControl(data.group || null, [
-        Validators.required]);
-
     if(data.id != null) {
       this.dialogName = "Editing student";
       this.dialogBtnName = "Save"
@@ -60,9 +65,29 @@ export class DialogEditWrapper {
       this.dialogName = "Adding student";
       this.dialogBtnName = "Add";
     }
+    this.group = {
+      id: null,
+      nameOfGroup: this.data.group,
+    };
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+
+      if(this.authService.getUserRole() == "ADMIN") {
+      this.groupService.getAllGroupNames().subscribe( data => {
+      this.groups = data;
+      });
+    }
+
+    else {
+      let teacherId = parseInt(localStorage.getItem("userId") || "0");
+      if(teacherId != 0) {
+        this.groupService.getTeacherGroups(teacherId).subscribe( data => {
+          this.groups = data;
+        });
+      }
+    }
+  }
 
   onNoClick(): void {
     this.dialogRef.close();
@@ -70,7 +95,7 @@ export class DialogEditWrapper {
 
   isFormValid(): boolean {
     return (this.nameInputControl.valid && this.surnameInputControl.valid
-            && this.patronymicInputControl.valid && this.groupInputControl.valid)
+            && this.patronymicInputControl.valid)
             ? true : false;
   }
 
@@ -79,7 +104,7 @@ export class DialogEditWrapper {
       this.data.name = this.nameInputControl.value;
       this.data.surname = this.surnameInputControl.value;
       this.data.patronymic = this.patronymicInputControl.value;
-      this.data.group = this.groupInputControl.value;
+      this.data.group = this.group.nameOfGroup;
       this.dialogRef.close(this.data);
     }
   }
