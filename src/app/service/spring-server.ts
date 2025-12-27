@@ -18,13 +18,15 @@ export class SpringServer {
     console.log({surname: student.surname,
                  name: student.name,
                  patronymic: student.patronymic,
-                 group: student.group,
+                 groupId: student.groupId,
 
     });
-    return this.http.post<Student>(`${this.apiUrl}/students/filter`, {surname: student.surname,
+    return this.http.post<Student>(`${this.apiUrl}/students`, {
+                                                  id: student.id,
+                                                  surname: student.surname,
                                                   name: student.name,
                                                   patronymic: student.patronymic,
-                                                  group: student.group,
+                                                  groupId: student.groupId,
     }).pipe();
   }
 
@@ -57,6 +59,16 @@ export class SpringServer {
 
   getAllTeachers(): Observable<any> {
     let tempUrl = `${this.apiUrl}/teachers`;
+    return this.http.get<any>(tempUrl);
+  }
+
+  getAllStudents(): Observable<any> {
+    let tempUrl = `${this.apiUrl}/students`;
+    return this.http.get<any>(tempUrl);
+  }
+
+  getAllGroups(): Observable<any> {
+    let tempUrl = `${this.apiUrl}/groups`;
     return this.http.get<any>(tempUrl);
   }
 }

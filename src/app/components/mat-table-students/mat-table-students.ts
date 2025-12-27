@@ -47,12 +47,9 @@ export class MatTableStudents {
 
   // переменная отвечает за группу -> в запрос добавляется эта группа(фильтр) -> работает для всех ролей(комбобокс)
 
-  group: Group = {
-    id: null,
-    nameOfGroup: '',
-  };
-
+  group: Group;
   groups?: Group[];
+  selectedGroupId: number | null;
 
   constructor(private springServer: SpringServer, public dialog: MatDialog, private authService: AuthService, private router: Router, private groupService: GroupService) {
     this.dataSource = new MatTableDataSource<Student>;
@@ -63,6 +60,11 @@ export class MatTableStudents {
     this.sortActive = '';
     this.sortDirection = '';
     this.filterValue = '';
+    this.group = {
+      id: null,
+      nameOfGroup: '',
+    };
+    this.selectedGroupId = null;
   }
 
   @ViewChild(MatSort) sort: MatSort | undefined;
@@ -105,7 +107,7 @@ export class MatTableStudents {
             name: '',
             surname: '',
             patronymic: '',
-            group: '',
+            groupId: null,
           }
         });
         dialogAddingNewStudent.afterClosed().subscribe((result: Student) => {
@@ -125,7 +127,7 @@ export class MatTableStudents {
       name: student.name,
       surname: student.surname,
       patronymic: student.patronymic,
-      group: student.group,
+      groupId: student.groupId,
     }
     const dialogEditingStudent = this.dialog.open(DialogEditWrapper, {
       width: '400px',
@@ -218,8 +220,9 @@ export class MatTableStudents {
   }
 
   getGroupsAndStudentsFromGroup(): void {
-    if(this.getUserRole() == "STUDENT" || this.getUserRole() == "TEACHER") { // подумать
+    if(this.getUserRole() == "STUDENT" || this.getUserRole() == "TEACHER") {
       let groupId = parseInt(localStorage.getItem("group") || "0");
+      this.group.id = groupId;
       this.loadStudentsForGroup(groupId);
     }
 
@@ -227,7 +230,7 @@ export class MatTableStudents {
       let teacherId: number = parseInt(localStorage.getItem("userId") || "0");
 
       if(teacherId == 0) {
-        console.log("the id ccan't be 0");
+        console.log("teacherId can't be 0");
       }
 
       else {
@@ -240,15 +243,21 @@ export class MatTableStudents {
     if(this.getUserRole() == "ADMIN") {
       this.groupService.getAllGroupNames().subscribe( data => {
       this.groups = data;
+      this.groups?.forEach( group => {
+        localStorage.setItem(group.id!.toString(), group.nameOfGroup);
+      })
     });
     }
   }
 
   loadStudentsForGroup(groupId: number) {
     this.groupService.getStudentGroup(groupId).subscribe( data => {
+      let groupName: string = data.nameOfGroup;
+      localStorage.setItem(data.id.toString(), groupName);
       this.dataSource.data = data.students;
+      this.group.nameOfGroup = groupName;
       this.dataSource.data.forEach( student => {
-          student.group = this.group.nameOfGroup = data.nameOfGroup;
+          student.groupId = this.group.id;
       });
     }
     )

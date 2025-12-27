@@ -37,9 +37,15 @@ import { Teacher } from '../../models/teacher';
   styleUrl: './people-page.css'
 })
 export class PeoplePage {
-  displayedColumns: string[] = ['id','surname', 'name', 'patronymic', 'group', 'role', 'actions'];
-  categories: string[] = ['Студенты', 'Преподаватели', 'Группы'];
-  dataSource: MatTableDataSource<User>;
+
+  studentColumns: string[] = ['id','surname', 'name', 'patronymic', 'group', 'actions'];
+  teacherColumns: string[] = ['id','surname', 'name', 'patronymic', 'groups', 'actions'];
+  groupColumns: string[] = ['id','name', 'teacher'];
+
+  displayedColums: string[] = this.studentColumns;
+
+  categories: string[] = ["Студенты", "Преподаватели", "Группы"];
+  dataSource: MatTableDataSource<any>;
   dataLength: number;
   countOfPages: number;
   currentPageIndex: number;
@@ -60,15 +66,20 @@ export class PeoplePage {
   groups?: Group[];
 
   constructor(private springServer: SpringServer, public dialog: MatDialog, private authService: AuthService, private router: Router, private groupService: GroupService) {
+
     this.dataSource = new MatTableDataSource<User>;
+
     this.dataLength = 0;
     this.currentPageIndex = 0;
     this.currentPageSize = 5;
     this.countOfPages = 0;
+
     this.sortActive = '';
     this.sortDirection = '';
+
     this.filterValue = '';
-    this.currentOption = '';
+
+    this.currentOption = "Студенты";
     this.addBtnName = "Add new Student";
   }
 
@@ -130,7 +141,7 @@ export class PeoplePage {
       name: student.name,
       surname: student.surname,
       patronymic: student.patronymic,
-      group: student.group,
+      groupId: student.groupId,
     }
     const dialogEditingStudent = this.dialog.open(DialogEditWrapper, {
       width: '400px',
@@ -160,6 +171,44 @@ export class PeoplePage {
     })
   }
 
+  getTeachers() {
+
+  }
+
+  getGroups() {
+
+  }
+
+  addNewTeacher(): void {
+
+    console.log('Add new teacher');
+  }
+
+  addNewGroup(): void {
+
+    console.log('Add new group');
+  }
+
+  editTeacher(teacher: Teacher): void {
+
+    console.log('Edit teacher', teacher);
+  }
+
+  editGroup(group: Group): void {
+
+    console.log('Edit group', group);
+  }
+
+  deleteTeacher(teacher: Teacher): void {
+
+    console.log('Delete teacher', teacher);
+  }
+
+  deleteGroup(group: Group): void {
+
+    console.log('Delete group', group);
+  }
+
   handlePaginatorEvent(event?:PageEvent) {
     if(event){
       if(event.pageSize != this.currentPageSize && this.sort){
@@ -175,7 +224,18 @@ export class PeoplePage {
 
       this.currentPageSize = event.pageSize;
       this.updatePaginator();
-      this.getStudents();
+
+      switch (this.currentOption) {
+        case 'Студенты':
+          this.getStudents();
+          break;
+        case 'Преподаватели':
+          this.getTeachers(); // Реализуйте метод для пагинации преподавателей
+          break;
+        case 'Группы':
+          this.getGroups(); // Реализуйте метод для пагинации групп
+          break;
+      }
     }
     else {
       console.log("error in handling paginator's event!!!");
@@ -192,7 +252,18 @@ export class PeoplePage {
         this.sortDirection = '';
       }
       console.log(" dfsfsdf");
-      this.getStudents();
+
+      switch (this.currentOption) {
+        case 'Студенты':
+          this.getStudents();
+          break;
+        case 'Преподаватели':
+          this.getTeachers();
+          break;
+        case 'Группы':
+          this.getGroups();
+          break;
+      }
     }
     else console.log("error in handling sort's event!!!");
   }
@@ -204,27 +275,62 @@ export class PeoplePage {
   }
 
   onSelectionChange(event: MatSelectChange): void {
-    switch (event.value){
-      case "students":
 
+    this.currentPageIndex = 0;
+    this.sortActive = '';
+    this.sortDirection = '';
+    this.filterValue = '';
+
+    switch (event.value){
+      case "Студенты":
+        this.displayedColums = this.studentColumns;
+        this.addBtnName = "Add new Student";
+        this.getAllStudents();
         break;
 
-      case "teachers":
+      case "Преподаватели":
+        this.displayedColums = this.teacherColumns;
+        this.addBtnName = "Add new Teacher";
         this.getAllTeachers();
         break;
 
-      case "groups":
-
+      case "Группы":
+        this.displayedColums = this.groupColumns;
+        this.addBtnName = "Add new Group";
+        this.getAllGroups();
         break;
-
     }
-
-
   }
 
   getAllTeachers(): void {
     this.springServer.getAllTeachers().subscribe( data => {
       this.dataSource.data = data;
     })
+  }
+
+  getAllStudents(): void {
+    this.springServer.getAllStudents().subscribe( data => {
+      this.dataSource.data = data;
+    })
+  }
+
+  getAllGroups(): void {
+    this.springServer.getAllGroups().subscribe( data => {
+      this.dataSource.data = data;
+    })
+  }
+
+  addNewItem(): void {
+    switch (this.currentOption) {
+      case 'Студенты':
+        this.addNewStudent();
+        break;
+      case 'Преподаватели':
+        this.addNewTeacher();
+        break;
+      case 'Группы':
+        this.addNewGroup();
+        break;
+    }
   }
 }

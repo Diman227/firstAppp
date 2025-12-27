@@ -38,8 +38,8 @@ export class DialogEditWrapper {
   nameInputControl: FormControl;
   surnameInputControl: FormControl;
   patronymicInputControl: FormControl;
+
   groups: Group[] = new Array();
-  group: Group;
   groupId: number | null = null;
 
   constructor(private groupService: GroupService, private authService: AuthService , private springServer:SpringServer, public dialogRef: MatDialogRef<DialogEditWrapper>,
@@ -65,10 +65,6 @@ export class DialogEditWrapper {
       this.dialogName = "Adding student";
       this.dialogBtnName = "Add";
     }
-    this.group = {
-      id: null,
-      nameOfGroup: this.data.group,
-    };
   }
 
   ngOnInit(): void {
@@ -104,7 +100,7 @@ export class DialogEditWrapper {
       this.data.name = this.nameInputControl.value;
       this.data.surname = this.surnameInputControl.value;
       this.data.patronymic = this.patronymicInputControl.value;
-      this.data.group = this.group.nameOfGroup;
+      this.data.groupId = this.groupId;
       this.dialogRef.close(this.data);
     }
   }

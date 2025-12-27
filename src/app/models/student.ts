@@ -4,12 +4,12 @@ export class Student{
     this.name = '';
     this.surname = '';
     this.patronymic = '';
-    this.group = '';
+    this.groupId = null;
   }
   static idCounter: number = 3;
   id: number | null;
   surname: string;
   name: string;
   patronymic: string;
-  group: string;
+  groupId: number | null;
 }
