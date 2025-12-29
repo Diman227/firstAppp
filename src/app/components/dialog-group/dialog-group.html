@@ -1,0 +1,37 @@
+<header>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel=”stylesheet”>
+</header>
+<h1 mat-dialog-title>{{ dialogName }}</h1>
+<div mat-dialog-content style="display: inline; padding: 0px; margin: auto;">
+
+  <mat-form-field class="full-width-input">
+
+    <input matInput placeholder="Name of group"
+    [formControl]="nameInputControl">
+
+    @if(nameInputControl.hasError('required')){
+      <mat-error>Название обязательно</mat-error>
+    }
+
+  </mat-form-field>
+
+  <mat-form-field class="full-width-input">
+
+            <mat-label>Выберите преподавателя</mat-label>
+            <mat-select [(ngModel)]="teacherId" name="teacherId" required>
+              <mat-option value="" disabled>Выберите преподавателя</mat-option>
+              @for (teacher of teachers; track teacher.id) {
+                <mat-option [value]="teacher.id">{{teacher.surname }} {{teacher.name }} {{teacher.patronymic}}</mat-option>
+              }
+            </mat-select>
+
+  </mat-form-field>
+
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button (click)="onNoClick()">Cancel</button>
+
+  <button class="right-align" mat-raised-button color="primary"
+    [mat-dialog-close]="data" [disabled]="!isFormValid()" (click)="onSaveOrAddClick()">{{ dialogBtnName }}</button>
+</div>
+

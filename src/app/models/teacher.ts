@@ -7,7 +7,6 @@ constructor(){
     this.surname = '';
     this.name = '';
     this.patronymic = '';
-    this.role = "TEACHER";
     this.teacherGroups = new Array();
     }
 
@@ -15,6 +14,5 @@ constructor(){
   surname: string;
   name: string;
   patronymic: string;
-  role: string;
   teacherGroups: Array<Group> | null;
 }

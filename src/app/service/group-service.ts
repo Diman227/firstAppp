@@ -22,7 +22,11 @@ export class GroupService {
   }
 
   getAllGroupNames(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/groups/names`)
+    return this.http.get<any>(`${this.apiUrl}/groups/names`);
+  }
+
+  getGroupsWithoutTeacher(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/groupsWithoutTeachers`);
   }
 
 }

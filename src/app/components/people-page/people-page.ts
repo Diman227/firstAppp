@@ -1,3 +1,4 @@
+import { group } from 'node:console';
 import { Component } from '@angular/core';
 import { AuthService } from './../../service/auth-service';
 import { SpringServer } from '../../service/spring-server';
@@ -19,6 +20,8 @@ import { GroupService } from '../../service/group-service';
 import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import { User } from '../../models/user';
 import { Teacher } from '../../models/teacher';
+import { DialogGroup } from '../dialog-group/dialog-group';
+import { DialogTeacher } from '../dialog-teacher/dialog-teacher';
 
 @Component({
   selector: 'app-group-page',
@@ -40,30 +43,35 @@ export class PeoplePage {
 
   studentColumns: string[] = ['id','surname', 'name', 'patronymic', 'group', 'actions'];
   teacherColumns: string[] = ['id','surname', 'name', 'patronymic', 'groups', 'actions'];
-  groupColumns: string[] = ['id','name', 'teacher'];
+  groupColumns: string[] = ['id','name', 'teacher', 'actions'];
 
   displayedColums: string[] = this.studentColumns;
 
   categories: string[] = ["Студенты", "Преподаватели", "Группы"];
+
   dataSource: MatTableDataSource<any>;
+
   dataLength: number;
   countOfPages: number;
   currentPageIndex: number;
   currentPageSize: number;
+
   sortActive: string;
   sortDirection: string;
+
   filterValue: string;
+
   currentOption: string;
   addBtnName: string;
-
-  // переменная отвечает за группу -> в запрос добавляется эта группа(фильтр) -> работает для всех ролей(комбобокс)
 
   group: Group = {
     id: null,
     nameOfGroup: '',
   };
-
+  teacherId: number | null = null;
   groups?: Group[];
+
+  teacherMap: Map<number, Teacher> = new Map();
 
   constructor(private springServer: SpringServer, public dialog: MatDialog, private authService: AuthService, private router: Router, private groupService: GroupService) {
 
@@ -81,6 +89,7 @@ export class PeoplePage {
 
     this.currentOption = "Студенты";
     this.addBtnName = "Add new Student";
+
   }
 
   @ViewChild(MatSort) sort: MatSort | undefined;
@@ -105,6 +114,7 @@ export class PeoplePage {
   ngOnInit(): void {
     console.log("OnInit");
     this.refreshTable();
+    this.getAllStudents();
     this.dataSource.paginator = this.paginator;
 
   }
@@ -180,33 +190,102 @@ export class PeoplePage {
   }
 
   addNewTeacher(): void {
-
+    const dialogAddingNewGroup = this.dialog.open(DialogTeacher, {
+          width: '400px',
+          data: {
+            id: null,
+            name: '',
+            surname: '',
+            patronymic: '',
+            teacherGroups: null,
+          }
+        });
+        dialogAddingNewGroup.afterClosed().subscribe((result: any) => {
+          if(result != null) {
+            console.log("adding new group: " + result.nameOfGroup);
+            this.springServer.addNewGroup(result.group, result.groupTeacherId).subscribe(() => {
+              this.refreshTable();
+            }
+            );
+          }
+        });
     console.log('Add new teacher');
   }
 
   addNewGroup(): void {
+    const dialogAddingNewGroup = this.dialog.open(DialogGroup, {
+          width: '400px',
+          data: {
+            group: this.group,
+            groupTeacherId: null,
+          }
+        });
+        dialogAddingNewGroup.afterClosed().subscribe((result: any) => {
+          if(result != null) {
+            console.log("adding new group: " + result.nameOfGroup);
+            this.springServer.addNewGroup(result.group, result.groupTeacherId).subscribe(() => {
+              this.refreshTable();
+            }
+            );
+          }
+        });
 
     console.log('Add new group');
   }
 
   editTeacher(teacher: Teacher): void {
-
+    let tempTeacher = {
+      id: teacher.id,
+      name: teacher.name,
+      surname: teacher.surname,
+      patronymic: teacher.patronymic,
+      teacherGroups: teacher.teacherGroups,
+    }
+    const dialogEditingStudent = this.dialog.open(DialogTeacher, {
+      width: '400px',
+      data: tempTeacher,
+    });
+    dialogEditingStudent.afterClosed().subscribe((result: Teacher) => {
+      if(result != null) {
+        console.log("editing student: " + result.name);
+        this.springServer.editTeacher(result).subscribe(() => this.refreshTable());
+      }
+    })
     console.log('Edit teacher', teacher);
   }
 
   editGroup(group: Group): void {
-
+    const dialogAddingNewGroup = this.dialog.open(DialogGroup, {
+          width: '400px',
+          data: {
+            group: group,
+            groupTeacherId: null,
+          }
+        });
+        dialogAddingNewGroup.afterClosed().subscribe((result: any) => {
+          if(result != null) {
+            console.log("adding new group: " + result.nameOfGroup);
+            this.springServer.addNewGroup(result.group, result.groupTeacherId).subscribe(() => {
+              this.refreshTable();
+            }
+            );
+          }
+        });
     console.log('Edit group', group);
   }
 
-  deleteTeacher(teacher: Teacher): void {
-
-    console.log('Delete teacher', teacher);
+  deleteTeacher(teacherId: number): void {
+    this.springServer.deleteTeacher(teacherId).subscribe( () => {
+      this.refreshTable();
+    });
+    console.log('Delete teacher', teacherId);
   }
 
-  deleteGroup(group: Group): void {
-
-    console.log('Delete group', group);
+  deleteGroup(groupId: number): void {
+    this.springServer.deleteGroup(groupId).subscribe( () => {
+      this.refreshTable();
+    });
+    console.log('Delete group', groupId);
   }
 
   handlePaginatorEvent(event?:PageEvent) {
@@ -230,10 +309,10 @@ export class PeoplePage {
           this.getStudents();
           break;
         case 'Преподаватели':
-          this.getTeachers(); // Реализуйте метод для пагинации преподавателей
+          this.getTeachers();
           break;
         case 'Группы':
-          this.getGroups(); // Реализуйте метод для пагинации групп
+          this.getGroups();
           break;
       }
     }
@@ -302,6 +381,7 @@ export class PeoplePage {
     }
   }
 
+  // todo не работает цикл
   getAllTeachers(): void {
     this.springServer.getAllTeachers().subscribe( data => {
       this.dataSource.data = data;
@@ -310,13 +390,15 @@ export class PeoplePage {
 
   getAllStudents(): void {
     this.springServer.getAllStudents().subscribe( data => {
-      this.dataSource.data = data;
+      this.dataSource.data = data.content;
     })
   }
 
   getAllGroups(): void {
     this.springServer.getAllGroups().subscribe( data => {
-      this.dataSource.data = data;
+      let groups: Group[] = data;
+      this.dataSource.data = groups;
+      this.loadTeachers(groups);
     })
   }
 
@@ -332,5 +414,37 @@ export class PeoplePage {
         this.addNewGroup();
         break;
     }
+  }
+
+  getTeacherFIO(groupId: number): string {
+    let teacher: Teacher = this.teacherMap.get(groupId)!;
+    if(teacher != undefined) {
+      let teacherFIO = teacher.surname + ' ' + teacher.name + ' ' + teacher.patronymic;
+      return teacherFIO;
+    }
+    return "No teacher";
+  }
+
+  loadTeachers(groups: Group[]): void {
+    this.springServer.getAllTeachers().subscribe(data => {
+    let teachers: Teacher[] = data;
+
+     groups.forEach(group => {
+      if (group.id != null) {
+        const teacherForGroup = teachers.find(teacher =>
+          // Используем groupsOfStudents вместо teacherGroups
+          teacher.groupsOfStudents?.some(g => g.id === group.id)
+        );
+
+        if (teacherForGroup) {
+          this.teacherMap.set(group.id, teacherForGroup);
+          console.log(`Найдено: группа ${group.nameOfGroup} -> учитель ${teacherForGroup.surname}`);
+        }
+      }
+    });
+
+    console.log(this.teacherMap);
+    console.log(' ');
+  });
   }
 }

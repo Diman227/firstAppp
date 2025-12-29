@@ -52,18 +52,24 @@ export class MatTableStudents {
   selectedGroupId: number | null;
 
   constructor(private springServer: SpringServer, public dialog: MatDialog, private authService: AuthService, private router: Router, private groupService: GroupService) {
+
     this.dataSource = new MatTableDataSource<Student>;
+
     this.dataLength = 0;
     this.currentPageIndex = 0;
     this.currentPageSize = 5;
     this.countOfPages = 0;
+
     this.sortActive = '';
     this.sortDirection = '';
+
     this.filterValue = '';
+
     this.group = {
       id: null,
       nameOfGroup: '',
     };
+
     this.selectedGroupId = null;
   }
 

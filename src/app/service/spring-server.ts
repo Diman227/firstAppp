@@ -1,8 +1,11 @@
+import { group } from 'node:console';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Student } from '../models/student';
 import { Sort } from '@angular/material/sort';
+import { Group } from '../models/group';
+import { Teacher } from '../models/teacher';
 
 @Injectable({
   providedIn: 'root'
@@ -30,12 +33,49 @@ export class SpringServer {
     }).pipe();
   }
 
+  addNewGroup(group: Group, teacherId: number | null) : Observable<Group> {
+    return this.http.post<Group>(`${this.apiUrl}/groups`, {
+      id: null,
+      nameOfGroup: group.nameOfGroup,
+      groupTeacherId: teacherId,
+      students: null
+    });
+  }
+
+  addNewTeacher(teacher: Teacher) : Observable<Teacher> {
+    return this.http.post<Teacher>(`${this.apiUrl}/teachers`, {
+      id: null,
+      surname: teacher.surname,
+      name: teacher.name,
+      patronymic: teacher.patronymic,
+      teacherGroups: teacher.teacherGroups,
+    });
+  }
+
   deleteStudent(student: Student): Observable<Student> {
     return this.http.delete<Student>(`${this.apiUrl}/students/${student.id}`);
   }
 
+  deleteTeacher(teacherId: number): Observable<any> {
+    let tempUrl = `${this.apiUrl}/teachers/${teacherId}`;
+    return this.http.delete<any>(tempUrl);
+  }
+
+  deleteGroup(groupId: number): Observable<any> {
+    let tempUrl = `${this.apiUrl}/groups/${groupId}`;
+    return this.http.delete<any>(tempUrl);
+  }
+
   editStudent(student: Student): Observable<Student> {
     return this.http.patch<Student>(`${this.apiUrl}/students`, student);
+  }
+
+  editTeacher(teacher: Teacher): Observable<Teacher> {
+    return this.http.patch<Teacher>(`${this.apiUrl}/teachers`, teacher);
+  }
+
+  editGroup(group: Group): Observable<Group> {
+    return this.http.patch<Group>(`${this.apiUrl}/groups`, group)
   }
 
   getStudentsForPagination(pageNumber: number, limitOfStudentsForPage: number, sortActive: string, sortDirection: string, filterValue: string): Observable<any> {
@@ -71,5 +111,7 @@ export class SpringServer {
     let tempUrl = `${this.apiUrl}/groups`;
     return this.http.get<any>(tempUrl);
   }
+
+
 }
 
