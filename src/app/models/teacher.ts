@@ -7,12 +7,12 @@ constructor(){
     this.surname = '';
     this.name = '';
     this.patronymic = '';
-    this.teacherGroups = new Array();
+    this.groupsOfStudents = new Array();
     }
 
   id: number | null;
   surname: string;
   name: string;
   patronymic: string;
-  teacherGroups: Array<Group> | null;
+  groupsOfStudents: Array<Group> | null;
 }

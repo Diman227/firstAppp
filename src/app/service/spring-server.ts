@@ -48,7 +48,7 @@ export class SpringServer {
       surname: teacher.surname,
       name: teacher.name,
       patronymic: teacher.patronymic,
-      teacherGroups: teacher.teacherGroups,
+      groupsOfStudents: teacher.groupsOfStudents,
     });
   }
 

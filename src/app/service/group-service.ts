@@ -16,7 +16,7 @@ export class GroupService {
     return this.http.get<any>(tempUrl);
   }
 
-  getTeacherGroups(teacherId: number): Observable<Group[]> {
+  getgroupsOfStudents(teacherId: number): Observable<Group[]> {
     let tempUrl = `${this.apiUrl}/teachers/${teacherId}/groups`;
     return this.http.get<Group[]>(tempUrl);
   }

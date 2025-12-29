@@ -197,7 +197,7 @@ export class PeoplePage {
             name: '',
             surname: '',
             patronymic: '',
-            teacherGroups: null,
+            groupsOfStudents: null,
           }
         });
         dialogAddingNewGroup.afterClosed().subscribe((result: any) => {
@@ -239,7 +239,7 @@ export class PeoplePage {
       name: teacher.name,
       surname: teacher.surname,
       patronymic: teacher.patronymic,
-      teacherGroups: teacher.teacherGroups,
+      groupsOfStudents: teacher.groupsOfStudents,
     }
     const dialogEditingStudent = this.dialog.open(DialogTeacher, {
       width: '400px',
@@ -432,19 +432,15 @@ export class PeoplePage {
      groups.forEach(group => {
       if (group.id != null) {
         const teacherForGroup = teachers.find(teacher =>
-          // Используем groupsOfStudents вместо teacherGroups
+
           teacher.groupsOfStudents?.some(g => g.id === group.id)
         );
 
         if (teacherForGroup) {
           this.teacherMap.set(group.id, teacherForGroup);
-          console.log(`Найдено: группа ${group.nameOfGroup} -> учитель ${teacherForGroup.surname}`);
         }
       }
     });
-
-    console.log(this.teacherMap);
-    console.log(' ');
   });
   }
 }

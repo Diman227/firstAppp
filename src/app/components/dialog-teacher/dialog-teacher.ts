@@ -96,7 +96,7 @@ export class DialogTeacher {
       this.data.name = this.nameInputControl.value;
       this.data.surname = this.surnameInputControl.value;
       this.data.patronymic = this.patronymicInputControl.value;
-      this.data.teacherGroups?.push(group);
+      this.data.groupsOfStudents?.push(group);
       this.dialogRef.close(this.data);
     }
   }

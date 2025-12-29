@@ -240,7 +240,7 @@ export class MatTableStudents {
       }
 
       else {
-        this.groupService.getTeacherGroups(teacherId).subscribe( data => {
+        this.groupService.getgroupsOfStudents(teacherId).subscribe( data => {
         this.groups = data;
       })
       }

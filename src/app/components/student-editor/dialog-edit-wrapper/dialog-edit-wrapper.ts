@@ -78,7 +78,7 @@ export class DialogEditWrapper {
     else {
       let teacherId = parseInt(localStorage.getItem("userId") || "0");
       if(teacherId != 0) {
-        this.groupService.getTeacherGroups(teacherId).subscribe( data => {
+        this.groupService.getgroupsOfStudents(teacherId).subscribe( data => {
           this.groups = data;
         });
       }
