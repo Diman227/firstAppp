@@ -254,24 +254,21 @@ export class PeoplePage {
     console.log('Edit teacher', teacher);
   }
 
-  editGroup(group: Group): void {
+  editGroup(editingGroup: Group): void {
+
     const dialogAddingNewGroup = this.dialog.open(DialogGroup, {
           width: '400px',
-          data: {
-            group: group,
-            groupTeacherId: null,
-          }
+          data: editingGroup
         });
         dialogAddingNewGroup.afterClosed().subscribe((result: any) => {
           if(result != null) {
-            console.log("adding new group: " + result.nameOfGroup);
+            console.log("editing new group: " + result.nameOfGroup);
             this.springServer.addNewGroup(result.group, result.groupTeacherId).subscribe(() => {
               this.refreshTable();
             }
             );
           }
         });
-    console.log('Edit group', group);
   }
 
   deleteTeacher(teacherId: number): void {

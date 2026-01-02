@@ -12,7 +12,7 @@
   <mat-form-field class="full-width-input">
 
             <mat-label>Выберите группу</mat-label>
-            <mat-select [(ngModel)]="selectedGroupId" name="selectedGroupId" required (selectionChange)="onSelectionChange($event)">
+            <mat-select [(ngModel)]="groupId" name="selectedGroupId" required (selectionChange)="onSelectionChange($event)">
               <mat-option value="" disabled>Выберите группу</mat-option>
               @for (group of groups; track group.id) {
                 <mat-option [value]="group.id">{{group.nameOfGroup}}</mat-option>

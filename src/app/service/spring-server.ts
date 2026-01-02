@@ -80,10 +80,6 @@ export class SpringServer {
 
   getStudentsForPagination(pageNumber: number, limitOfStudentsForPage: number, sortActive: string, sortDirection: string, filterValue: string): Observable<any> {
 
-    const headers = new HttpHeaders({
-      Authorization: '' + localStorage.getItem('token'),
-      'Access-Control-Allow-Origin': '*',
-    })
     this.fullUrl = this.paginatedUrl = `${this.apiUrl}/students?page=${pageNumber}&size=${limitOfStudentsForPage}`;
 
     if(sortActive && sortDirection){
@@ -94,7 +90,7 @@ export class SpringServer {
       this.fullUrl += `&filter=${filterValue}`;
     }
 
-    return this.http.get<any>(this.fullUrl, { headers });
+    return this.http.get<any>(this.fullUrl);
   }
 
   getAllTeachers(): Observable<any> {

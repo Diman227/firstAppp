@@ -35,21 +35,24 @@ import {MatSelectChange, MatSelectModule} from '@angular/material/select';
   styleUrl: './mat-table-students.css'
 })
 export class MatTableStudents {
+
   displayedColumns: string[] = ['id','surname', 'name', 'patronymic', 'group', 'actions'];
+
   dataSource: MatTableDataSource<Student>;
+
   dataLength: number;
   countOfPages: number;
   currentPageIndex: number;
   currentPageSize: number;
+
   sortActive: string;
   sortDirection: string;
-  filterValue: string;
 
-  // переменная отвечает за группу -> в запрос добавляется эта группа(фильтр) -> работает для всех ролей(комбобокс)
+  filterValue: string;
 
   group: Group;
   groups?: Group[];
-  selectedGroupId: number | null;
+  groupId: number | null;
 
   constructor(private springServer: SpringServer, public dialog: MatDialog, private authService: AuthService, private router: Router, private groupService: GroupService) {
 
@@ -70,7 +73,7 @@ export class MatTableStudents {
       nameOfGroup: '',
     };
 
-    this.selectedGroupId = null;
+    this.groupId = null;
   }
 
   @ViewChild(MatSort) sort: MatSort | undefined;
